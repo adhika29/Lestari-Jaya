@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     // Route untuk export PDF (HARUS didefinisikan SEBELUM route resource)
     Route::get('/sugar-cane/export-pdf', [SugarCaneShipmentController::class, 'exportPdf'])->name('sugar-cane.export-pdf');
     Route::get('/sugar-input/export-pdf', [SugarInputController::class, 'exportPdf'])->name('sugar-input.export-pdf');
+    Route::get('/gaji-karyawan/export-pdf', [GajiKaryawanController::class, 'exportPdf'])->name('gaji-karyawan.export-pdf');
+    Route::get('/karyawan/export-pdf', [KaryawanController::class, 'exportPdf'])->name('karyawan.export-pdf');
     
     // Definisi resource untuk sugar-cane
     Route::resource('sugar-cane', SugarCaneShipmentController::class);

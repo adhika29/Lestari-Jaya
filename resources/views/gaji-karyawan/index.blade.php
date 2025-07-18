@@ -70,14 +70,11 @@
                 </div>
                 
                 <div class="flex space-x-2">
-                    <a href="#" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
+                    <a href="{{ route('gaji-karyawan.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
                         <i class="ph-fill ph-file-pdf mr-2"></i>
                         Ekspor PDF
                     </a>
-                    <a href="#" class="border border-green-500 text-green-500 px-4 py-2 rounded-lg flex items-center hover:bg-green-50">
-                        <i class="ph-fill ph-file-xls mr-2"></i>
-                        Ekspor Excel
-                    </a>
+                    <!-- Tombol Excel dihapus dari sini -->
                 </div>
             </div>
         </div>

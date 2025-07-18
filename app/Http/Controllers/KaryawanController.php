@@ -117,4 +117,30 @@ class KaryawanController extends Controller
         return redirect()->route('karyawan.index')
                          ->with('success', 'Data karyawan berhasil dihapus!');
     }
+    
+    /**
+     * Export data to PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = Karyawan::query();
+        
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('nama', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhere('telepon', 'like', "%{$search}%");
+        }
+        
+        // Filter by karyawan_id
+        if ($request->has('karyawan_id') && $request->karyawan_id != '') {
+            $query->where('id', $request->karyawan_id);
+        }
+        
+        $karyawan = $query->orderBy('nama')->get();
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('karyawan.pdf', compact('karyawan'));
+        return $pdf->download('laporan-data-karyawan.pdf');
+    }
 }

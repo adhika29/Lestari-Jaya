@@ -193,4 +193,42 @@ class GajiKaryawanController extends Controller
         return redirect()->route('gaji-karyawan.index')
                          ->with('success', 'Data gaji karyawan berhasil dihapus!');
     }
+
+    /**
+     * Export data to PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = GajiKaryawan::query();
+        
+        // Filter berdasarkan tanggal awal dan akhir
+        if ($request->has('tanggal_awal') && $request->tanggal_awal) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_awal);
+        }
+        
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
+        }
+        
+        // Filter berdasarkan karyawan
+        if ($request->has('karyawan') && !empty($request->karyawan)) {
+            $query->whereHas('karyawan', function($q) use ($request) {
+                $q->whereIn('karyawan.id', $request->karyawan);
+            });
+        }
+        
+        // Filter berdasarkan bulan dan tahun
+        if ($request->has('bulan') && $request->bulan) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+        
+        $gajiKaryawan = $query->with('karyawan')->orderBy('tanggal', 'desc')->get();
+        
+        $pdf = PDF::loadView('gaji-karyawan.pdf', compact('gajiKaryawan'));
+        return $pdf->download('laporan-gaji-karyawan.pdf');
+    }
 }
