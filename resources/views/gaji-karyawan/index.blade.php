@@ -309,6 +309,15 @@
             karyawanContent.classList.toggle('hidden');
             karyawanIcon.classList.toggle('rotate-180');
         });
+
+        // Secara default, konten filter tertutup
+        if (tanggalContent) {
+            tanggalContent.classList.add('hidden');
+        }
+        if (karyawanContent) {
+            karyawanContent.classList.add('hidden');
+        }
+
     });
 </script>
 @endsection
