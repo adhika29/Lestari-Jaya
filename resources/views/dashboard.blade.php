@@ -88,6 +88,68 @@
         </div>
     </div>
 
+    <!-- Aktivitas Terbaru -->
+    <div class="bg-white shadow rounded-lg mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Aktivitas Terbaru</h3>
+        </div>
+        <div class="p-6">
+            <div class="space-y-4">
+                <!-- Daftar aktivitas terbaru -->
+                @php
+                    $recentSugarCanes = \App\Models\SugarCaneShipment::latest()->take(3)->get();
+                    $recentSugarInputs = \App\Models\SugarInput::latest()->take(3)->get();
+                    $recentSugarOutputs = \App\Models\SugarOutput::latest()->take(3)->get();
+                @endphp
+
+                @forelse($recentSugarCanes as $item)
+                <div class="flex items-center p-3 border-b border-gray-100">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="ph ph-tree text-green-500 text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">Pengiriman tebu dari {{ $item->nama_petani }}</p>
+                        <p class="text-xs text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+                @empty
+                @endforelse
+
+                @forelse($recentSugarInputs as $item)
+                <div class="flex items-center p-3 border-b border-gray-100">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="ph ph-arrow-down-right text-blue-500 text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">Gula masuk {{ $item->sak }} sak</p>
+                        <p class="text-xs text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+                @empty
+                @endforelse
+
+                @forelse($recentSugarOutputs as $item)
+                <div class="flex items-center p-3 border-b border-gray-100">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="ph ph-arrow-up-right text-red-500 text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium">Gula keluar {{ $item->sak }} sak untuk {{ $item->nama_pembeli }}</p>
+                        <p class="text-xs text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+                @empty
+                @endforelse
+
+                @if($recentSugarCanes->isEmpty() && $recentSugarInputs->isEmpty() && $recentSugarOutputs->isEmpty())
+                <div class="text-center py-4 text-gray-500">
+                    Belum ada aktivitas terbaru
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">

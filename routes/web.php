@@ -55,4 +55,9 @@ Route::middleware('auth')->group(function () {
     // Tambahkan route untuk karyawan
     Route::resource('karyawan', KaryawanController::class);
     Route::resource('gaji-karyawan', GajiKaryawanController::class);
+    
+    // Tambahkan route untuk profil
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.update-password');
 }); // Close middleware group and Route::group

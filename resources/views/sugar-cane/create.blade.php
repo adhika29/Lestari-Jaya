@@ -65,13 +65,16 @@
                     </div>
                 </div>
 
+                <!-- Hapus field jumlah sak dan ganti dengan bobot -->
                 <div>
-                    <label for="sak" class="block text-gray-700 mb-2">Jumlah Sak</label>
-                    <input type="number" id="sak" name="sak" value="{{ old('sak') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1">
+                    <label for="bobot_kg" class="block text-gray-700 mb-2">Bobot</label>
+                    <div class="relative">
+                        <input type="number" id="bobot_kg" name="bobot_kg" value="{{ old('bobot_kg') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1">
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                            <span class="text-gray-500">kg</span>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Hidden field untuk bobot yang akan dihitung otomatis -->
-                <input type="hidden" id="bobot_kg" name="bobot_kg" value="{{ old('bobot_kg') }}">
                 
                 <div>
                     <label for="harga_per_kg" class="block text-gray-700 mb-2">Harga (per kg)</label>
@@ -83,13 +86,12 @@
                     </div>
                 </div>
                 
-                <!-- Informasi bobot otomatis -->
-                <div class="w-fit border-t-4 border-brown-500 p-4 rounded-lg" style="background-color: #EFEBEA;">
-                    <p class="text-sm text-gray-700">Bobot akan dihitung otomatis: <span id="bobot-display" class="font-semibold">0 kg</span></p>
-                    <p class="text-xs text-gray-600 mt-1">1 sak = 50 kg</p>
-                </div>
+                <!-- Hapus informasi bobot otomatis -->
 
-                <div class="flex justify-center mt-6">
+                <!-- Tombol tambah yang di atas dihapus -->
+                
+                <div class="flex justify-end mt-6 space-x-4">
+                    <a href="{{ route('sugar-cane.index') }}" class="px-6 py-2 bg-white text-brown-500 border-2 border-brown-500 rounded-md hover:bg-brown-50">Batal</a>
                     <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Tambah</button>
                 </div>
             </div>
@@ -97,25 +99,5 @@
     </div>
 </div>
 
-<script>
-// Auto calculate bobot berdasarkan sak
-document.addEventListener('DOMContentLoaded', function() {
-    const sakInput = document.getElementById('sak');
-    const bobotInput = document.getElementById('bobot_kg');
-    const bobotDisplay = document.getElementById('bobot-display');
-    
-    function calculateBobot() {
-        const sak = parseInt(sakInput.value) || 0;
-        const bobot = sak * 50; // 1 sak = 50 kg
-        
-        bobotInput.value = bobot;
-        bobotDisplay.textContent = bobot + ' kg';
-    }
-    
-    sakInput.addEventListener('input', calculateBobot);
-    
-    // Calculate on page load if there's a value
-    calculateBobot();
-});
-</script>
+<!-- Hapus script JavaScript perhitungan otomatis -->
 @endsection

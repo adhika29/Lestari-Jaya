@@ -68,24 +68,15 @@
                     </div>
                 </div>
 
-                <!-- Hapus field bobot yang terlihat ini -->
-                <!-- <div>
+                <div>
                     <label for="bobot_kg" class="block text-gray-700 mb-2">Bobot</label>
                     <div class="relative">
-                        <input type="number" id="bobot_kg" name="bobot_kg" value="{{ old('bobot_kg', $sugarCane->bobot_kg) }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required>
+                        <input type="number" id="bobot_kg" name="bobot_kg" value="{{ old('bobot_kg', $sugarCane->bobot_kg) }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1">
                         <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                             <span class="text-gray-500">kg</span>
                         </div>
-                    </div>  
-                </div> -->
-
-                <div>
-                    <label for="sak" class="block text-gray-700 mb-2">Jumlah Sak</label>
-                    <input type="number" id="sak" name="sak" value="{{ old('sak', $sugarCane->sak ?? ($sugarCane->bobot_kg / 50)) }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1">
+                    </div>
                 </div>
-
-                <!-- Hidden field untuk bobot yang akan dihitung otomatis -->
-                <input type="hidden" id="bobot_kg" name="bobot_kg" value="{{ old('bobot_kg', $sugarCane->bobot_kg) }}">
                 
                 <div>
                     <label for="harga_per_kg" class="block text-gray-700 mb-2">Harga (per kg)</label>
@@ -97,11 +88,7 @@
                     </div>
                 </div>
                 
-                <!-- Informasi bobot otomatis - pindahkan ke sini -->
-                <div class="w-fit border-t-4 border-brown-500 p-4 rounded-lg" style="background-color: #EFEBEA;">
-                    <p class="text-sm text-gray-700">Bobot akan dihitung otomatis: <span id="bobot-display" class="font-semibold">{{ $sugarCane->bobot_kg }} kg</span></p>
-                    <p class="text-xs text-gray-600 mt-1">1 sak = 50 kg</p>
-                </div>
+                <!-- Hapus informasi bobot otomatis -->
 
                 <div class="flex justify-center mt-6">
                     <a href="{{ route('sugar-cane.index') }}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 mr-4">Batal</a>
@@ -113,24 +100,4 @@
 </div>
 @endsection
 
-<script>
-// Auto calculate bobot berdasarkan sak
-document.addEventListener('DOMContentLoaded', function() {
-    const sakInput = document.getElementById('sak');
-    const bobotInput = document.getElementById('bobot_kg');
-    const bobotDisplay = document.getElementById('bobot-display');
-    
-    function calculateBobot() {
-        const sak = parseInt(sakInput.value) || 0;
-        const bobot = sak * 50; // 1 sak = 50 kg
-        
-        bobotInput.value = bobot;
-        bobotDisplay.textContent = bobot + ' kg';
-    }
-    
-    sakInput.addEventListener('input', calculateBobot);
-    
-    // Calculate on page load if there's a value
-    calculateBobot();
-});
-</script>
+<!-- Hapus script JavaScript perhitungan otomatis -->

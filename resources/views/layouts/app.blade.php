@@ -204,14 +204,11 @@
                         <!-- Dropdown Menu -->
                         <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50 hidden">
                             <div class="py-1">
-                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <a href="{{ route('profile.index') }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <i class="ph ph-user mr-3"></i>
                                     Profile
                                 </a>
-                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <i class="ph ph-gear mr-3"></i>
-                                    Pengaturan
-                                </a>
+                                <!-- Opsi Pengaturan dihapus -->
                                 <hr class="my-1">
                                 <form method="POST" action="{{ route('logout') }}" class="block">
                                     @csrf
