@@ -62,10 +62,7 @@
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
-                <a href="#" class="border border-green-500 text-green-500 px-4 py-2 rounded-lg flex items-center hover:bg-green-50">
-                    <i class="ph-fill ph-file-xls mr-2 text-lg"></i>
-                    Ekspor Excel
-                </a>
+                <!-- Tombol ekspor Excel dihapus -->
             </div>
         </div>
 
@@ -145,6 +142,7 @@
             </div>
             
             <form action="{{ route('biaya-operasional.index') }}" method="GET">
+                <!-- Tombol export dihapus -->
                 <!-- Tanggal Filter -->
                 <div class="mb-4 border-b border-gray-200 pb-4">
                     <div class="flex justify-between items-center mb-2 cursor-pointer" id="tanggalHeader">
