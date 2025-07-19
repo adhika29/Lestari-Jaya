@@ -150,12 +150,12 @@
                         <th class="py-3 px-4 text-left">No</th>
                         <th class="py-3 px-4 text-left">Tanggal</th>
                         <th class="py-3 px-4 text-left">Sak</th>
-                        <th class="py-3 px-4 text-left">Bobot (kg)</th>
-                        <th class="py-3 px-4 text-left">Jumlah Gula (ton)</th>
-                        <th class="py-3 px-4 text-left">Gaji (per ton)</th>
+                        <th class="py-3 px-4 text-left">Bobot</th>
+                        <th class="py-3 px-4 text-left">Jumlah Gula</th>
+                        <th class="py-3 px-4 text-left">Gaji</th>
                         <th class="py-3 px-4 text-left">Total Gaji</th>
                         <!-- Header kolom karyawan -->                        
-                        <th class="py-3 px-4 text-left w-64">Karyawan</th>
+                        <th class="py-3 px-4 text-left w-40">Karyawan</th>
                         
                         <th class="py-3 px-4 text-left">Jumlah Karyawan</th>
                         <th class="py-3 px-4 text-left">Gaji per Karyawan</th>
@@ -173,11 +173,11 @@
                         <td class="py-3 px-4">Rp{{ number_format($gaji->gaji_per_ton, 0, ',', '.') }}</td>
                         <td class="py-3 px-4">Rp{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
                         <!-- Kolom karyawan dalam baris data -->
-                        <td class="py-3 px-4 w-64">
+                        <td class="py-3 px-4 w-40">
                             <div class="max-h-20 overflow-y-auto">
                                 @foreach($gaji->karyawan as $index => $k)
                                     <div class="mb-1 flex">
-                                        <span class="inline-block w-6 flex-shrink-0">{{ $index + 1 }}.</span>
+                                        <span class="inline-block w-5 flex-shrink-0">{{ $index + 1 }}.</span>
                                         <span class="flex-grow">{{ $k->nama }}</span>
                                     </div>
                                 @endforeach

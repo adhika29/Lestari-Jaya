@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BiayaOperasional;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BiayaOperasionalController extends Controller
 {
@@ -33,6 +34,26 @@ class BiayaOperasionalController extends Controller
             $query->whereYear('tanggal', $request->tahun);
         }
         
+        // Data untuk chart berdasarkan tanggal
+        $chartDataTanggal = BiayaOperasional::select(
+            DB::raw('DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted'),
+            DB::raw('SUM(total_harga) as total')
+        )
+            ->groupBy('tanggal_formatted')
+            ->orderBy('tanggal')
+            ->limit(10)
+            ->get();
+        
+        // Data untuk chart berdasarkan keterangan
+        $chartDataKeterangan = BiayaOperasional::select(
+            'keterangan',
+            DB::raw('SUM(total_harga) as total')
+        )
+            ->groupBy('keterangan')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+        
         $biayaOperasional = $query->orderBy('tanggal', 'desc')->paginate(10);
         
         // Ambil daftar keterangan unik untuk dropdown
@@ -41,7 +62,12 @@ class BiayaOperasionalController extends Controller
                             ->orderBy('keterangan')
                             ->pluck('keterangan');
         
-        return view('biaya-pengeluaran.operasional.index', compact('biayaOperasional', 'keteranganList'));
+        return view('biaya-pengeluaran.operasional.index', compact(
+            'biayaOperasional', 
+            'keteranganList',
+            'chartDataTanggal',
+            'chartDataKeterangan'
+        ));
     }
 
     /**
@@ -51,7 +77,13 @@ class BiayaOperasionalController extends Controller
      */
     public function create()
     {
-        return view('biaya-pengeluaran.operasional.create');
+        // Ambil daftar keterangan unik untuk dropdown
+        $keteranganList = BiayaOperasional::select('keterangan')
+                            ->distinct()
+                            ->orderBy('keterangan')
+                            ->pluck('keterangan');
+                        
+        return view('biaya-pengeluaran.operasional.create', compact('keteranganList'));
     }
 
     /**
@@ -95,7 +127,14 @@ class BiayaOperasionalController extends Controller
     public function edit($id)
     {
         $biayaOperasional = BiayaOperasional::findOrFail($id);
-        return view('biaya-pengeluaran.operasional.edit', compact('biayaOperasional'));
+        
+        // Ambil daftar keterangan unik untuk dropdown
+        $keteranganList = BiayaOperasional::select('keterangan')
+                            ->distinct()
+                            ->orderBy('keterangan')
+                            ->pluck('keterangan');
+                        
+        return view('biaya-pengeluaran.operasional.edit', compact('biayaOperasional', 'keteranganList'));
     }
 
     /**
@@ -146,5 +185,49 @@ class BiayaOperasionalController extends Controller
         
         return redirect()->route('biaya-operasional.index')
             ->with('success', 'Data biaya operasional berhasil dihapus.');
+    }
+    
+    /**
+     * Export data to PDF
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = BiayaOperasional::query();
+        
+        // Filter berdasarkan pencarian
+        if ($request->has('search') && $request->search) {
+            $query->where('keterangan', 'like', '%' . $request->search . '%');
+        }
+        
+        // Filter berdasarkan bulan dan tahun
+        if ($request->has('bulan') && $request->bulan) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+        
+        // Filter berdasarkan rentang tanggal
+        if ($request->has('tanggal_dari') && $request->tanggal_dari) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+        }
+        
+        if ($request->has('tanggal_sampai') && $request->tanggal_sampai) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+        }
+        
+        // Filter berdasarkan keterangan
+        if ($request->has('keterangan') && !empty($request->keterangan)) {
+            $query->whereIn('keterangan', $request->keterangan);
+        }
+        
+        $biayaOperasional = $query->get();
+        
+        $pdf = PDF::loadView('biaya-pengeluaran.operasional.pdf', compact('biayaOperasional'));
+        return $pdf->download('laporan-biaya-operasional.pdf');
     }
 }

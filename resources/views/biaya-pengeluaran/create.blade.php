@@ -51,12 +51,32 @@
 
                 <div>
                     <label for="keterangan" class="block text-gray-700 mb-2">Keterangan</label>
-                    <input type="text" id="keterangan" name="keterangan" value="{{ old('keterangan') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required>
+                    <div class="relative">
+                        <input type="text" id="keterangan" name="keterangan" value="{{ old('keterangan') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required autocomplete="off">
+                        <div id="keterangan-dropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden max-h-60 overflow-y-auto">
+                            <div class="p-2 border-b border-gray-200">
+                                <input type="text" id="keterangan-search" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" placeholder="Cari keterangan...">
+                            </div>
+                            <div id="keterangan-list">
+                                @foreach($keteranganList as $item)
+                                    <div class="keterangan-item p-2 hover:bg-gray-100 cursor-pointer">{{ $item }}</div>
+                                @endforeach
+                            </div>
+                            <div class="p-2 border-t border-gray-200">
+                                <button type="button" id="add-new-keterangan" class="w-full px-3 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600 flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Tambah Keterangan Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
                     <label for="volume" class="block text-gray-700 mb-2">Volume</label>
-                    <input type="number" id="volume" name="volume" value="{{ old('volume') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1" step="any">
+                    <input type="number" id="volume" name="volume" value="{{ old('volume') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required min="1" step="1">
                 </div>
 
                 <div>
@@ -66,6 +86,7 @@
                         <option value="Sak" {{ old('satuan') == 'Sak' ? 'selected' : '' }}>Sak</option>
                         <option value="rit" {{ old('satuan') == 'rit' ? 'selected' : '' }}>rit</option>
                         <option value="paket" {{ old('satuan') == 'paket' ? 'selected' : '' }}>paket</option>
+                        <option value="porsi" {{ old('satuan') == 'porsi' ? 'selected' : '' }}>porsi</option>
                         <option value="kg" {{ old('satuan') == 'kg' ? 'selected' : '' }}>kg</option>
                         <option value="unit" {{ old('satuan') == 'unit' ? 'selected' : '' }}>unit</option>
                     </select>
@@ -85,7 +106,7 @@
                 <input type="hidden" id="total_harga" name="total_harga" value="{{ old('total_harga') }}">
 
                 <!-- Tampilkan informasi total harga yang dihitung -->
-                <div class="inline-block p-4 rounded-md border-t-4 border-brown-500" style="background-color: #EFEBEA;">
+                <div class="w-fit inline-block p-4 rounded-md border-t-4 border-brown-500" style="background-color: #EFEBEA;">
                     <p class="text-sm text-gray-700">Total harga akan dihitung otomatis: <span id="total-display" class="font-semibold">Rp 0</span></p>
                 </div>
             </div>
@@ -107,11 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalDisplay = document.getElementById('total-display');
 
     function calculateTotal() {
-        const volume = parseFloat(volumeInput.value) || 0;
-        const harga = parseFloat(hargaInput.value) || 0;
+        const volume = parseInt(volumeInput.value) || 0;
+        const harga = parseInt(hargaInput.value) || 0;
         const total = volume * harga;
-        totalHargaInput.value = total;
-        totalDisplay.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        totalHargaInput.value = Math.round(total);
+        totalDisplay.textContent = 'Rp ' + Math.round(total).toLocaleString('id-ID');
     }
 
     volumeInput.addEventListener('input', calculateTotal);
@@ -119,6 +140,68 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate on page load
     calculateTotal();
+    
+    // Keterangan dropdown functionality
+    const keteranganInput = document.getElementById('keterangan');
+    const keteranganDropdown = document.getElementById('keterangan-dropdown');
+    const keteranganSearch = document.getElementById('keterangan-search');
+    const keteranganItems = document.querySelectorAll('.keterangan-item');
+    const addNewKeteranganBtn = document.getElementById('add-new-keterangan');
+    
+    // Show dropdown when input is focused
+    keteranganInput.addEventListener('focus', function() {
+        keteranganDropdown.classList.remove('hidden');
+    });
+    
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!keteranganInput.contains(e.target) && !keteranganDropdown.contains(e.target)) {
+            keteranganDropdown.classList.add('hidden');
+        }
+    });
+    
+    // Filter items when searching
+    keteranganSearch.addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        const keteranganList = document.getElementById('keterangan-list');
+        const items = keteranganList.querySelectorAll('.keterangan-item');
+        
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchValue)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    });
+    
+    // Select item when clicked
+    keteranganItems.forEach(item => {
+        item.addEventListener('click', function() {
+            keteranganInput.value = this.textContent;
+            keteranganDropdown.classList.add('hidden');
+        });
+    });
+    
+    // Add new keterangan
+    addNewKeteranganBtn.addEventListener('click', function() {
+        const newValue = keteranganSearch.value.trim();
+        if (newValue) {
+            keteranganInput.value = newValue;
+            keteranganDropdown.classList.add('hidden');
+        } else {
+            // If search is empty, use what's in the main input
+            const mainInputValue = keteranganInput.value.trim();
+            if (mainInputValue) {
+                // Keep the current value and just close the dropdown
+                keteranganDropdown.classList.add('hidden');
+            } else {
+                // Focus on search to indicate user should type something
+                keteranganSearch.focus();
+            }
+        }
+    });
 });
 </script>
 @endsection

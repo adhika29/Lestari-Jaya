@@ -142,6 +142,8 @@
             </div>
             
             <form action="{{ route('biaya-operasional.index') }}" method="GET">
+                <!-- Hapus kode JavaScript berikut: -->
+                <!-- Sampai di sini -->
                 <!-- Tombol export dihapus -->
                 <!-- Tanggal Filter -->
                 <div class="mb-4 border-b border-gray-200 pb-4">
@@ -286,6 +288,27 @@
         }
         if (keteranganContent) {
             keteranganContent.classList.add('hidden');
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-submit form when bulan or tahun is changed
+        const bulanSelect = document.querySelector('select[name="bulan"]');
+        const tahunSelect = document.querySelector('select[name="tahun"]');
+        const filterForm = document.querySelector('form.flex.items-center.space-x-4');
+        
+        if (bulanSelect && filterForm) {
+            bulanSelect.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+        
+        if (tahunSelect && filterForm) {
+            tahunSelect.addEventListener('change', function() {
+                filterForm.submit();
+            });
         }
     });
 </script>

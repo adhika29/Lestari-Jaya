@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BiayaKonsumsi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BiayaKonsumsiController extends Controller
 {
@@ -40,6 +41,26 @@ class BiayaKonsumsiController extends Controller
             $query->whereIn('keterangan', $request->keterangan);
         }
         
+        // Data untuk chart berdasarkan tanggal
+        $chartDataTanggal = BiayaKonsumsi::select(
+            DB::raw('DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted'),
+            DB::raw('SUM(total_harga) as total')
+        )
+            ->groupBy('tanggal_formatted')
+            ->orderBy('tanggal')
+            ->limit(10)
+            ->get();
+        
+        // Data untuk chart berdasarkan keterangan
+        $chartDataKeterangan = BiayaKonsumsi::select(
+            'keterangan',
+            DB::raw('SUM(total_harga) as total')
+        )
+            ->groupBy('keterangan')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+        
         $biayaKonsumsi = $query->paginate(10);
         
         // Ambil daftar keterangan unik untuk dropdown
@@ -48,12 +69,23 @@ class BiayaKonsumsiController extends Controller
                             ->orderBy('keterangan')
                             ->pluck('keterangan');
         
-        return view('biaya-pengeluaran.index', compact('biayaKonsumsi', 'keteranganList'));
+        return view('biaya-pengeluaran.index', compact(
+            'biayaKonsumsi', 
+            'keteranganList', 
+            'chartDataTanggal', 
+            'chartDataKeterangan'
+        ));
     }
 
     public function create()
     {
-        return view('biaya-pengeluaran.create');
+        // Ambil daftar keterangan unik untuk dropdown
+        $keteranganList = BiayaKonsumsi::select('keterangan')
+                            ->distinct()
+                            ->orderBy('keterangan')
+                            ->pluck('keterangan');
+                            
+        return view('biaya-pengeluaran.create', compact('keteranganList'));
     }
 
     public function store(Request $request)
@@ -84,7 +116,13 @@ class BiayaKonsumsiController extends Controller
 
     public function edit(BiayaKonsumsi $biayaKonsumsi)
     {
-        return view('biaya-pengeluaran.edit', compact('biayaKonsumsi'));
+        // Ambil daftar keterangan unik untuk dropdown
+        $keteranganList = BiayaKonsumsi::select('keterangan')
+                            ->distinct()
+                            ->orderBy('keterangan')
+                            ->pluck('keterangan');
+                            
+        return view('biaya-pengeluaran.edit', compact('biayaKonsumsi', 'keteranganList'));
     }
 
     public function update(Request $request, BiayaKonsumsi $biayaKonsumsi)
@@ -119,5 +157,43 @@ class BiayaKonsumsiController extends Controller
         
         return redirect()->route('biaya-konsumsi.index')
             ->with('success', 'Data biaya konsumsi berhasil dihapus');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = BiayaKonsumsi::latest();
+        
+        // Filter berdasarkan pencarian
+        if ($request->has('search') && $request->search) {
+            $query->where('keterangan', 'like', '%' . $request->search . '%');
+        }
+        
+        // Filter berdasarkan bulan dan tahun
+        if ($request->has('bulan') && $request->bulan) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+        
+        // Filter berdasarkan rentang tanggal
+        if ($request->has('tanggal_dari') && $request->tanggal_dari) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+        }
+        
+        if ($request->has('tanggal_sampai') && $request->tanggal_sampai) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_sampai);
+        }
+        
+        // Filter berdasarkan keterangan
+        if ($request->has('keterangan') && !empty($request->keterangan)) {
+            $query->whereIn('keterangan', $request->keterangan);
+        }
+        
+        $biayaKonsumsi = $query->get();
+        
+        $pdf = PDF::loadView('biaya-pengeluaran.pdf', compact('biayaKonsumsi'));
+        return $pdf->download('laporan-biaya-konsumsi.pdf');
     }
 }

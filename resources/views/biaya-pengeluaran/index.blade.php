@@ -14,6 +14,39 @@
         </div>
     </div>
 
+    <!-- Chart Section - Kotak terpisah seperti pada gambar -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Kotak Chart Pengirim -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Biaya</h2>
+            <div class="h-64">
+                <canvas id="biayaPerTanggalChart"></canvas>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-sm font-medium">Total Biaya: <span id="totalBiayaTanggal">Rp0</span></p>
+            </div>
+        </div>
+        
+        <!-- Kotak Chart Keterangan -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Keterangan</h2>
+            <div class="h-64">
+                <canvas id="biayaPerKeteranganChart"></canvas>
+            </div>
+            <!-- Legenda dengan warna dan nilai -->
+            <div class="mt-4 flex justify-center space-x-6">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 mr-2" style="background-color: #8B4513;"></div>
+                    <span class="text-sm">pecel : Rp<span id="totalPecelValue">160.000</span></span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 mr-2" style="background-color: #CD853F;"></div>
+                    <span class="text-sm">nasi : Rp<span id="totalNasiValue">120.000</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Biaya Konsumsi Table Section -->
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-6">
@@ -35,16 +68,16 @@
                 </form>
             </div>
 
-            <form action="{{ route('biaya-konsumsi.index') }}" method="GET" class="flex items-center space-x-4">
+            <form action="{{ route('biaya-konsumsi.index') }}" method="GET" class="flex items-center space-x-4" id="filterForm">
                 <input type="hidden" name="search" value="{{ request('search') }}">
-                <select name="bulan" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
+                <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
                     <option value="">Bulan</option>
                     @for ($i = 1; $i <= 12; $i++)
                         <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                     @endfor
                 </select>
 
-                <select name="tahun" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
+                <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
                     <option value="">Tahun</option>
                     @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
                         <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
@@ -58,7 +91,7 @@
             </form>
 
             <div class="ml-auto flex space-x-2">
-                <a href="#" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
+                <a href="{{ route('biaya-konsumsi.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
@@ -203,6 +236,156 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart Data
+        const chartDataTanggal = @json($chartDataTanggal);
+        const chartDataKeterangan = @json($chartDataKeterangan);
+
+        // Hitung total biaya untuk tanggal
+        let totalBiayaTanggal = 0;
+        chartDataTanggal.forEach(item => {
+            totalBiayaTanggal += parseFloat(item.total);
+        });
+        document.getElementById('totalBiayaTanggal').textContent = 'Rp' + totalBiayaTanggal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        // Cari total untuk pecel dan nasi
+        let totalPecel = 0;
+        let totalNasi = 0;
+        chartDataKeterangan.forEach(item => {
+            if (item.keterangan.toLowerCase() === 'pecel') {
+                totalPecel = parseFloat(item.total);
+            } else if (item.keterangan.toLowerCase() === 'nasi') {
+                totalNasi = parseFloat(item.total);
+            }
+        });
+
+        // Format dan tampilkan nilai total langsung di legenda
+        document.getElementById('totalPecelValue').textContent = totalPecel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        document.getElementById('totalNasiValue').textContent = totalNasi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        // Bar Chart - Biaya per Tanggal
+        const ctxTanggal = document.getElementById('biayaPerTanggalChart').getContext('2d');
+        new Chart(ctxTanggal, {
+            type: 'bar',
+            data: {
+                labels: chartDataTanggal.map(item => item.tanggal_formatted),
+                datasets: [{
+                    label: 'Total Biaya (Rp)',
+                    data: chartDataTanggal.map(item => item.total),
+                    backgroundColor: 'rgba(139, 69, 19, 0.7)',
+                    borderColor: 'rgba(139, 69, 19, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += 'Rp' + context.parsed.y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pie Chart - Biaya per Keterangan
+        const ctxKeterangan = document.getElementById('biayaPerKeteranganChart').getContext('2d');
+        new Chart(ctxKeterangan, {
+            type: 'pie',
+            data: {
+                labels: chartDataKeterangan.map(item => item.keterangan),
+                datasets: [{
+                    data: chartDataKeterangan.map(item => item.total),
+                    backgroundColor: [
+                        'rgba(139, 69, 19, 0.7)',
+                        'rgba(205, 133, 63, 0.7)',
+                        'rgba(160, 82, 45, 0.7)',
+                        'rgba(210, 105, 30, 0.7)',
+                        'rgba(165, 42, 42, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(139, 69, 19, 1)',
+                        'rgba(205, 133, 63, 1)',
+                        'rgba(160, 82, 45, 1)',
+                        'rgba(210, 105, 30, 1)',
+                        'rgba(165, 42, 42, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // Menyembunyikan legenda bawaan Chart.js
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += 'Rp' + context.parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-submit form when bulan or tahun is changed
+        const bulanSelect = document.getElementById('bulanSelect');
+        const tahunSelect = document.getElementById('tahunSelect');
+        const filterForm = document.getElementById('filterForm');
+        
+        if (bulanSelect && filterForm) {
+            bulanSelect.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+        
+        if (tahunSelect && filterForm) {
+            tahunSelect.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+    });
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inisialisasi Select2 untuk dropdown keterangan
@@ -213,6 +396,7 @@
             dropdownParent: $('#filterModal')
         });
         
+        // Modal Filter
         const filterModal = document.getElementById('filterModal');
         const openFilterModal = document.getElementById('openFilterModal');
         const closeFilterModal = document.getElementById('closeFilterModal');
@@ -247,44 +431,28 @@
             });
         }
 
-        // Tutup modal saat mengklik di luar modal
-        filterModal.addEventListener('click', function(e) {
-            if (e.target === filterModal) {
-                filterModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // Toggle dropdown untuk Tanggal
+        // Tanggal Accordion
         const tanggalHeader = document.getElementById('tanggalHeader');
         const tanggalContent = document.getElementById('tanggalContent');
         const tanggalIcon = document.getElementById('tanggalIcon');
 
-        if (tanggalHeader && tanggalContent && tanggalIcon) {
+        if (tanggalHeader && tanggalContent) {
             tanggalHeader.addEventListener('click', function() {
                 tanggalContent.classList.toggle('hidden');
                 tanggalIcon.classList.toggle('rotate-180');
             });
         }
-        
-        // Toggle dropdown untuk Keterangan
+
+        // Keterangan Accordion
         const keteranganHeader = document.getElementById('keteranganHeader');
         const keteranganContent = document.getElementById('keteranganContent');
         const keteranganIcon = document.getElementById('keteranganIcon');
 
-        if (keteranganHeader && keteranganContent && keteranganIcon) {
+        if (keteranganHeader && keteranganContent) {
             keteranganHeader.addEventListener('click', function() {
                 keteranganContent.classList.toggle('hidden');
                 keteranganIcon.classList.toggle('rotate-180');
             });
-        }
-
-        // Secara default, konten filter tertutup
-        if (tanggalContent) {
-            tanggalContent.classList.add('hidden');
-        }
-        if (keteranganContent) {
-            keteranganContent.classList.add('hidden');
         }
     });
 </script>

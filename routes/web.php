@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/sugar-input/export-pdf', [SugarInputController::class, 'exportPdf'])->name('sugar-input.export-pdf');
     Route::get('/gaji-karyawan/export-pdf', [GajiKaryawanController::class, 'exportPdf'])->name('gaji-karyawan.export-pdf');
     Route::get('/karyawan/export-pdf', [KaryawanController::class, 'exportPdf'])->name('karyawan.export-pdf');
+    Route::get('/biaya-konsumsi/export-pdf', [BiayaKonsumsiController::class, 'exportPdf'])->name('biaya-konsumsi.export-pdf');
+    Route::get('/biaya-operasional/export-pdf', [BiayaOperasionalController::class, 'exportPdf'])->name('biaya-operasional.export-pdf');
     
     // Definisi resource untuk sugar-cane
     Route::resource('sugar-cane', SugarCaneShipmentController::class);
