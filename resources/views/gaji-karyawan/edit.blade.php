@@ -59,17 +59,10 @@
                     @enderror
                 </div>
                 
-                <!-- Pilih Karyawan -->
-                <div>
-                    <label for="karyawan_ids" class="block text-sm font-medium text-gray-700 mb-1">Pilih Karyawan <span class="text-red-500">*</span></label>
-                    <select name="karyawan_ids[]" id="karyawan_ids" class="select2 w-full border-gray-300 rounded-md shadow-sm focus:ring-brown-500 focus:border-brown-500" multiple required>
-                        @foreach($karyawan as $k)
-                            <option value="{{ $k->id }}" {{ in_array($k->id, $selectedKaryawan) ? 'selected' : '' }}>{{ $k->nama }}</option>
-                        @endforeach
-                    </select>
-                    @error('karyawan_ids')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                <!-- Informasi Karyawan Aktif -->
+                <div class="w-fit border-t-4 border-brown-500 p-4 rounded-lg" style="background-color: #EFEBEA;">
+                    <p class="text-sm text-gray-700">Karyawan aktif yang akan menerima gaji: <span class="font-semibold">{{ \App\Models\Karyawan::where('status_aktif', true)->count() }} orang</span></p>
+                    <p class="text-xs text-gray-600 mt-1">Data karyawan diambil otomatis dari karyawan dengan status aktif</p>
                 </div>
                 
                 <!-- Informasi bobot otomatis -->
@@ -91,43 +84,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi Select2
-    $('.select2').select2({
-        placeholder: "Pilih karyawan",
-        allowClear: true,
-        // Fungsi untuk memfilter opsi yang sudah dipilih
-        matcher: function(params, data) {
-            // Jika tidak ada pencarian, kembalikan semua opsi yang belum dipilih
-            if ($.trim(params.term) === '') {
-                // Dapatkan nilai yang sudah dipilih
-                const selectedValues = $('#karyawan_ids').val() || [];
-                
-                // Jika opsi ini sudah dipilih, jangan tampilkan di dropdown
-                if (selectedValues.includes(data.id)) {
-                    return null;
-                }
-                
-                return data;
-            }
-            
-            // Jika ada pencarian, gunakan matcher bawaan Select2
-            if (typeof $.fn.select2.defaults.defaults.matcher === 'function') {
-                // Dapatkan nilai yang sudah dipilih
-                const selectedValues = $('#karyawan_ids').val() || [];
-                
-                // Jika opsi ini sudah dipilih, jangan tampilkan di dropdown
-                if (selectedValues.includes(data.id)) {
-                    return null;
-                }
-                
-                // Gunakan matcher bawaan untuk pencarian
-                return $.fn.select2.defaults.defaults.matcher(params, data);
-            }
-            
-            return data;
-        }
-    });
-    
     // Hitung bobot otomatis
     const sakInput = document.getElementById('sak');
     const bobotInput = document.getElementById('bobot_kg');
@@ -141,17 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     sakInput.addEventListener('input', updateBobot);
-    
-    // Update dropdown saat pilihan berubah
-    const karyawanSelect = $('#karyawan_ids');
-    
-    karyawanSelect.on('select2:select select2:unselect', function(e) {
-        // Refresh dropdown untuk memperbarui tampilan
-        $(this).select2('close');
-        setTimeout(function() {
-            karyawanSelect.select2('open');
-        }, 0);
-    });
 });
 </script>
 @endpush

@@ -15,7 +15,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <i class="ph ph-tree text-white text-lg"></i>
+                            <i class="ph-fill ph-tree text-white text-lg"></i>
                         </div>
                     </div>
                     <div class="ml-5 w-0 flex-1">
@@ -41,7 +41,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <i class="ph ph-arrow-down-right text-white text-lg"></i>
+                            <i class="ph-fill ph-arrow-down-right text-white text-lg"></i>
                         </div>
                     </div>
                     <div class="ml-5 w-0 flex-1">
@@ -67,7 +67,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                            <i class="ph ph-arrow-up-right text-white text-lg"></i>
+                            <i class="ph-fill ph-arrow-up-right text-white text-lg"></i>
                         </div>
                     </div>
                     <div class="ml-5 w-0 flex-1">
@@ -105,7 +105,7 @@
                 @forelse($recentSugarCanes as $item)
                 <div class="flex items-center p-3 border-b border-gray-100">
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="ph ph-tree text-green-500 text-lg"></i>
+                        <i class="ph-fill ph-tree text-green-500 text-lg"></i>
                     </div>
                     <div>
                         <p class="text-sm font-medium">Pengiriman tebu dari {{ $item->nama_petani }}</p>
@@ -118,7 +118,7 @@
                 @forelse($recentSugarInputs as $item)
                 <div class="flex items-center p-3 border-b border-gray-100">
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="ph ph-arrow-down-right text-blue-500 text-lg"></i>
+                        <i class="ph-fill ph-arrow-down-right text-blue-500 text-lg"></i>
                     </div>
                     <div>
                         <p class="text-sm font-medium">Gula masuk {{ $item->sak }} sak</p>
@@ -131,7 +131,7 @@
                 @forelse($recentSugarOutputs as $item)
                 <div class="flex items-center p-3 border-b border-gray-100">
                     <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="ph ph-arrow-up-right text-red-500 text-lg"></i>
+                        <i class="ph-fill ph-arrow-up-right text-red-500 text-lg"></i>
                     </div>
                     <div>
                         <p class="text-sm font-medium">Gula keluar {{ $item->sak }} sak untuk {{ $item->nama_pembeli }}</p>

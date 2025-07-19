@@ -13,7 +13,7 @@
             <svg class="w-3 h-3 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <span class="text-brown-500 font-medium">Tambah Pemasukan</span>
+            <span class="text-brown-500 font-medium">Tambah Gula Masuk</span>
         </div>
     </div>
 
@@ -26,7 +26,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </a>
-                <h2 class="text-xl font-semibold">Tambah Pemasukan</h2>
+                <h2 class="text-xl font-semibold">Tambah Gula Masuk</h2>
             </div>
             <hr class="border-t border-gray-300">
         </div>
@@ -65,7 +65,7 @@
 
                 <div class="flex justify-end mt-4">
                     <a href="{{ route('sugar-input.index') }}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 mr-4">Batal</a>
-                    <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Simpan</button>
+                    <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Tambah</button>
                 </div>
             </div>
         </form>

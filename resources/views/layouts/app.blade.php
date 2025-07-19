@@ -107,18 +107,18 @@
             </div>
             <nav class="mt-8">
                 <a href="{{ route('dashboard') }}" class="flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('dashboard') ? 'bg-brown-600' : '' }}">
-                    <i class="ph ph-house mr-3 text-xl"></i>
+                    <i class="ph-fill ph-house mr-3 text-xl"></i>
                     <span>Dashboard</span>
                 </a>
                 <a href="{{ route('sugar-cane.index') }}" class="flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('sugar-cane.*') ? 'bg-brown-600' : '' }}">
-                    <i class="ph ph-clipboard-text mr-3 text-xl"></i>
+                    <i class="ph-fill ph-clipboard-text mr-3 text-xl"></i>
                     <span>Pencatatan pengiriman tebu</span>
                 </a>
                 
                 <!-- Dropdown Menu untuk Pelaporan Gula -->
                 <div class="dropdown {{ request()->routeIs('sugar-input.*') || request()->routeIs('sugar-output.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('sugar-input.*') || request()->routeIs('sugar-output.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
-                        <i class="ph ph-currency-circle-dollar mr-3 text-xl"></i>
+                        <i class="ph-fill ph-currency-circle-dollar mr-3 text-xl"></i>
                         <span class="flex-1">Pelaporan Gula</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>
@@ -135,7 +135,7 @@
                 <!-- Dropdown Menu untuk Biaya Pengeluaran -->
                 <div class="dropdown {{ request()->routeIs('biaya-konsumsi.*') || request()->routeIs('biaya-operasional.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('biaya-konsumsi.*') || request()->routeIs('biaya-operasional.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
-                        <i class="ph ph-clock-countdown mr-3 text-xl"></i>
+                        <i class="ph-fill ph-clock-countdown mr-3 text-xl"></i>
                         <span class="flex-1">Biaya Pengeluaran</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>
@@ -152,7 +152,7 @@
                 <!-- Dropdown Menu untuk Karyawan -->
                 <div class="dropdown {{ request()->routeIs('karyawan.*') || request()->routeIs('gaji-karyawan.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('karyawan.*') || request()->routeIs('gaji-karyawan.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
-                        <i class="ph ph-user mr-3 text-xl"></i>
+                        <i class="ph-fill ph-user mr-3 text-xl"></i>
                         <span class="flex-1">Karyawan</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>

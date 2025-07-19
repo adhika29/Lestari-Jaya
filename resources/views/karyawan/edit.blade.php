@@ -57,6 +57,24 @@
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+                
+                <!-- Status Aktif -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <input type="radio" name="status_aktif" id="status_aktif_1" value="1" {{ old('status_aktif', $karyawan->status_aktif) == 1 ? 'checked' : '' }} class="h-4 w-4 text-brown-500 focus:ring-brown-500 border-gray-300">
+                            <label for="status_aktif_1" class="ml-2 block text-sm text-gray-700">Aktif</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" name="status_aktif" id="status_aktif_0" value="0" {{ old('status_aktif', $karyawan->status_aktif) == 0 ? 'checked' : '' }} class="h-4 w-4 text-brown-500 focus:ring-brown-500 border-gray-300">
+                            <label for="status_aktif_0" class="ml-2 block text-sm text-gray-700">Tidak Aktif</label>
+                        </div>
+                    </div>
+                    @error('status_aktif')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <div class="mt-8 flex justify-end">

@@ -52,17 +52,18 @@ class KaryawanController extends Controller
             'nama' => 'required|string|max:255|unique:karyawan,nama',
             'alamat' => 'nullable|string',
             'telepon' => 'nullable|string|max:20',
+            'status_aktif' => 'required|boolean',
         ], [
             'nama.unique' => 'Nama karyawan sudah ada sebelumnya.'
         ]);
         
-        // Siapkan data dengan nilai default
+        // Siapkan data
         $data = [
             'nama' => $request->nama,
             'tanggal_bergabung' => now(),
             'alamat' => $request->alamat,
             'telepon' => $request->telepon,
-            'status_aktif' => true
+            'status_aktif' => $request->status_aktif
         ];
         
         Karyawan::create($data);

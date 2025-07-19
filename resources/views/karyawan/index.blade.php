@@ -58,6 +58,7 @@
                         <th class="py-3 px-4 text-left">Nama</th>
                         <th class="py-3 px-4 text-left">Alamat</th>
                         <th class="py-3 px-4 text-left">No Telepon</th>
+                        <th class="py-3 px-4 text-left">Status</th>
                         <th class="py-3 px-4 text-left">Aksi</th>
                     </tr>
                 </thead>
@@ -68,6 +69,11 @@
                         <td class="py-3 px-4">{{ $k->nama }}</td>
                         <td class="py-3 px-4">{{ $k->alamat ?: '-' }}</td>
                         <td class="py-3 px-4">{{ $k->telepon ?: '-' }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs {{ $k->status_aktif ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $k->status_aktif ? 'Aktif' : 'Tidak Aktif' }}
+                            </span>
+                        </td>
                         <td class="py-3 px-4">
                             <div class="flex space-x-2">
                                 <a href="{{ route('karyawan.edit', $k->id) }}" class="text-blue-500 hover:text-blue-700">

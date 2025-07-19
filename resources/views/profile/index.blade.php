@@ -49,6 +49,11 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <input type="text" id="role" value="Admin" class="w-full border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed" disabled>
+                        <p class="text-gray-500 text-xs mt-1">Role tidak dapat diubah</p>
+                    </div>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="px-4 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brown-500 transition duration-200 transform hover:-translate-y-1 hover:shadow-lg">
@@ -104,6 +109,9 @@
                                 </svg>
                             </button>
                         </div>
+                        @error('password_confirmation')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
                 <div class="flex justify-end">

@@ -78,17 +78,10 @@
                     @enderror
                 </div>
                 
-                <!-- Pilih Karyawan -->
-                <div>
-                    <label for="karyawan_ids" class="block text-gray-700 mb-2">Pilih Karyawan <span class="text-red-500">*</span></label>
-                    <select name="karyawan_ids[]" id="karyawan_ids" class="select2 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" multiple required>
-                        @foreach($karyawan as $k)
-                            <option value="{{ $k->id }}">{{ $k->nama }}</option>
-                        @endforeach
-                    </select>
-                    @error('karyawan_ids')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                <!-- Informasi Karyawan Aktif -->
+                <div class="w-fit border-t-4 border-brown-500 p-4 rounded-lg" style="background-color: #EFEBEA;">
+                    <p class="text-sm text-gray-700">Karyawan aktif yang akan menerima gaji: <span class="font-semibold">{{ \App\Models\Karyawan::where('status_aktif', true)->count() }} orang</span></p>
+                    <p class="text-xs text-gray-600 mt-1">Data karyawan diambil otomatis dari karyawan dengan status aktif</p>
                 </div>
                 
                 <!-- Informasi bobot otomatis -->

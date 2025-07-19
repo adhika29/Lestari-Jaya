@@ -154,7 +154,9 @@
                         <th class="py-3 px-4 text-left">Jumlah Gula (ton)</th>
                         <th class="py-3 px-4 text-left">Gaji (per ton)</th>
                         <th class="py-3 px-4 text-left">Total Gaji</th>
-                        <th class="py-3 px-4 text-left">Karyawan</th>
+                        <!-- Header kolom karyawan -->                        
+                        <th class="py-3 px-4 text-left w-64">Karyawan</th>
+                        
                         <th class="py-3 px-4 text-left">Jumlah Karyawan</th>
                         <th class="py-3 px-4 text-left">Gaji per Karyawan</th>
                         <th class="py-3 px-4 text-left">Aksi</th>
@@ -170,10 +172,14 @@
                         <td class="py-3 px-4">{{ number_format($gaji->jumlah_gula_ton, 2, ',', '.') }} ton</td>
                         <td class="py-3 px-4">Rp{{ number_format($gaji->gaji_per_ton, 0, ',', '.') }}</td>
                         <td class="py-3 px-4">Rp{{ number_format($gaji->total_gaji, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4">
+                        <!-- Kolom karyawan dalam baris data -->
+                        <td class="py-3 px-4 w-64">
                             <div class="max-h-20 overflow-y-auto">
-                                @foreach($gaji->karyawan as $k)
-                                    <div class="mb-1">{{ $k->nama }}</div>
+                                @foreach($gaji->karyawan as $index => $k)
+                                    <div class="mb-1 flex">
+                                        <span class="inline-block w-6 flex-shrink-0">{{ $index + 1 }}.</span>
+                                        <span class="flex-grow">{{ $k->nama }}</span>
+                                    </div>
                                 @endforeach
                             </div>
                         </td>

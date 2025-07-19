@@ -77,12 +77,14 @@ class GajiKaryawanController extends Controller
             'sak' => 'required|integer|min:1',
             'bobot_kg' => 'required|numeric|min:0',
             'gaji_per_ton' => 'required|numeric|min:0',
-            'karyawan_ids' => 'required|array',
-            'karyawan_ids.*' => 'exists:karyawan,id'
         ]);
         
+        // Ambil semua karyawan aktif secara otomatis
+        $karyawanAktif = Karyawan::where('status_aktif', true)->get();
+        $karyawanIds = $karyawanAktif->pluck('id')->toArray();
+        
         // Hitung jumlah karyawan
-        $jumlahKaryawan = count($request->karyawan_ids);
+        $jumlahKaryawan = count($karyawanIds);
         
         // Jika tidak ada karyawan, set minimal 1 untuk menghindari division by zero
         if ($jumlahKaryawan < 1) {
@@ -113,7 +115,7 @@ class GajiKaryawanController extends Controller
         ]);
         
         // Attach karyawan ke gaji_karyawan
-        $gajiKaryawan->karyawan()->attach($request->karyawan_ids);
+        $gajiKaryawan->karyawan()->attach($karyawanIds);
         
         return redirect()->route('gaji-karyawan.index')
                          ->with('success', 'Data gaji karyawan berhasil ditambahkan!');
@@ -139,12 +141,14 @@ class GajiKaryawanController extends Controller
             'sak' => 'required|integer|min:1',
             'bobot_kg' => 'required|numeric|min:0',
             'gaji_per_ton' => 'required|numeric|min:0',
-            'karyawan_ids' => 'required|array',
-            'karyawan_ids.*' => 'exists:karyawan,id'
         ]);
         
+        // Ambil semua karyawan aktif secara otomatis
+        $karyawanAktif = Karyawan::where('status_aktif', true)->get();
+        $karyawanIds = $karyawanAktif->pluck('id')->toArray();
+        
         // Hitung jumlah karyawan
-        $jumlahKaryawan = count($request->karyawan_ids);
+        $jumlahKaryawan = count($karyawanIds);
         
         // Jika tidak ada karyawan, set minimal 1 untuk menghindari division by zero
         if ($jumlahKaryawan < 1) {
@@ -175,7 +179,7 @@ class GajiKaryawanController extends Controller
         ]);
         
         // Sync karyawan
-        $gajiKaryawan->karyawan()->sync($request->karyawan_ids);
+        $gajiKaryawan->karyawan()->sync($karyawanIds);
         
         return redirect()->route('gaji-karyawan.index')
                          ->with('success', 'Data gaji karyawan berhasil diperbarui!');

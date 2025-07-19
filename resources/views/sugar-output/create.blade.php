@@ -81,7 +81,7 @@
 
             <div class="flex justify-end mt-6">
                 <a href="{{ route('sugar-output.index') }}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 mr-4">Batal</a>
-                <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Simpan</button>
+                <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Tambah</button>
             </div>
         </div>
     </form>

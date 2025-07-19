@@ -65,7 +65,7 @@
             </h2>
             <a href="{{ route('sugar-input.create') }}" class="bg-brown-500 hover:bg-brown-600 text-white px-4 py-2 rounded-lg flex items-center">
                 <i class="ph ph-plus mr-2"></i>
-                Tambah Pemasukan
+                Tambah Gula Masuk
             </a>
         </div>
 

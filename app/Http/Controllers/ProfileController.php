@@ -33,20 +33,30 @@ class ProfileController extends Controller
     
     public function updatePassword(Request $request)
     {
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-        
-        $user = Auth::user();
-        
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password saat ini tidak cocok']);
+        try {
+            $request->validate([
+                'current_password' => 'required',
+                'password' => 'required|string|min:8',
+                'password_confirmation' => 'required',
+            ]);
+            
+            // Validasi konfirmasi password secara manual
+            if ($request->password !== $request->password_confirmation) {
+                return back()->withErrors(['password_confirmation' => 'Konfirmasi password tidak cocok.']);
+            }
+            
+            $user = Auth::user();
+            
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Password saat ini tidak cocok']);
+            }
+            
+            $user->password = Hash::make($request->password);
+            $user->save();
+            
+            return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator->errors());
         }
-        
-        $user->password = Hash::make($request->password);
-        $user->save();
-        
-        return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
     }
 }
