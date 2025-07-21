@@ -52,7 +52,12 @@ class SugarCaneShipmentController extends Controller
         $jenisTebuData = SugarCaneShipment::select('jenis_tebu', DB::raw('count(*) as total'))
             ->groupBy('jenis_tebu')
             ->get();
-            
+        
+        // Debugging - log data
+        \Log::info('Total SugarCaneShipment records: ' . SugarCaneShipment::count());
+        \Log::info('Pengirim data count: ' . $pengirimData->count());
+        \Log::info('Jenis Tebu data count: ' . $jenisTebuData->count());
+        
         // Data untuk rata-rata bobot
         $avgBobot = SugarCaneShipment::avg('bobot_kg');
         
@@ -64,7 +69,28 @@ class SugarCaneShipmentController extends Controller
 
     public function create()
     {
-        return view('sugar-cane.create');
+        // Ambil daftar nama pengirim yang sudah ada (unique)
+        $existingSenders = SugarCaneShipment::select('nama_pengirim')
+            ->distinct()
+            ->orderBy('nama_pengirim')
+            ->pluck('nama_pengirim');
+            
+        return view('sugar-cane.create', compact('existingSenders'));
+    }
+
+    // Method baru untuk API autocomplete
+    public function getSenders(Request $request)
+    {
+        $query = $request->get('q', '');
+        
+        $senders = SugarCaneShipment::select('nama_pengirim')
+            ->distinct()
+            ->where('nama_pengirim', 'LIKE', '%' . $query . '%')
+            ->orderBy('nama_pengirim')
+            ->limit(10)
+            ->pluck('nama_pengirim');
+            
+        return response()->json($senders);
     }
 
     public function store(Request $request)

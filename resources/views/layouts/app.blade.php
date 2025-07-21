@@ -85,6 +85,45 @@
         .dropdown.active .dropdown-arrow {
             transform: rotate(180deg);
         }
+        
+        /* Sidebar Collapse Styles */
+        .sidebar {
+            transition: width 0.3s ease;
+            width: 240px;
+        }
+        
+        .sidebar.collapsed {
+            width: 64px;
+        }
+        
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        
+        .sidebar.collapsed .dropdown-content {
+            display: none !important;
+        }
+        
+        .sidebar.collapsed .dropdown-arrow {
+            display: none;
+        }
+        
+        /* Logo collapsed styles */
+        .sidebar.collapsed .logo-full {
+            display: none;
+        }
+        
+        .sidebar.collapsed .logo-collapsed {
+            display: block;
+        }
+        
+        .logo-collapsed {
+            display: none;
+        }
+        
+        .main-content {
+            transition: margin-left 0.3s ease;
+        }
     </style>
     <!-- Di bagian head, tambahkan: -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -100,26 +139,31 @@
     
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-60 bg-brown-500 text-white">
+        <div class="sidebar bg-brown-500 text-white" id="sidebar">
             <!-- Logo yang dimodifikasi - dicentering dan ditambahkan border bottom -->
             <div class="p-[26px] text-2xl font-bold text-center border-b border-white pb-4">
-                <span class="text-white">Lestari</span><span class="text-green-300">Jaya</span>
+                <div class="logo-full">
+                    <span class="text-white sidebar-text">Lestari</span><span class="text-green-300 sidebar-text">Jaya</span>
+                </div>
+                <div class="logo-collapsed">
+                    <span class="text-white">L</span><span class="text-green-300">J</span>
+                </div>
             </div>
             <nav class="mt-8">
                 <a href="{{ route('dashboard') }}" class="flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('dashboard') ? 'bg-brown-600' : '' }}">
                     <i class="ph-fill ph-house mr-3 text-xl"></i>
-                    <span>Dashboard</span>
+                    <span class="sidebar-text">Dashboard</span>
                 </a>
                 <a href="{{ route('sugar-cane.index') }}" class="flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('sugar-cane.*') ? 'bg-brown-600' : '' }}">
                     <i class="ph-fill ph-clipboard-text mr-3 text-xl"></i>
-                    <span>Pencatatan pengiriman tebu</span>
+                    <span class="sidebar-text">Pencatatan pengiriman tebu</span>
                 </a>
                 
                 <!-- Dropdown Menu untuk Pelaporan Gula -->
                 <div class="dropdown {{ request()->routeIs('sugar-input.*') || request()->routeIs('sugar-output.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('sugar-input.*') || request()->routeIs('sugar-output.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
                         <i class="ph-fill ph-currency-circle-dollar mr-3 text-xl"></i>
-                        <span class="flex-1">Pelaporan Gula</span>
+                        <span class="flex-1 sidebar-text">Pelaporan Gula</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>
                     <div class="dropdown-content">
@@ -136,7 +180,7 @@
                 <div class="dropdown {{ request()->routeIs('biaya-konsumsi.*') || request()->routeIs('biaya-operasional.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('biaya-konsumsi.*') || request()->routeIs('biaya-operasional.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
                         <i class="ph-fill ph-clock-countdown mr-3 text-xl"></i>
-                        <span class="flex-1">Biaya Pengeluaran</span>
+                        <span class="flex-1 sidebar-text">Biaya Pengeluaran</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>
                     <div class="dropdown-content">
@@ -153,7 +197,7 @@
                 <div class="dropdown {{ request()->routeIs('karyawan.*') || request()->routeIs('gaji-karyawan.*') ? 'active' : '' }}">
                     <div class="dropdown-toggle flex items-center py-3 px-4 hover:bg-brown-600 {{ request()->routeIs('karyawan.*') || request()->routeIs('gaji-karyawan.*') ? 'bg-brown-600' : '' }}" onclick="toggleDropdown(this)">
                         <i class="ph-fill ph-user mr-3 text-xl"></i>
-                        <span class="flex-1">Karyawan</span>
+                        <span class="flex-1 sidebar-text">Karyawan</span>
                         <i class="ph ph-caret-down dropdown-arrow text-xl"></i>
                     </div>
                     <div class="dropdown-content">
@@ -172,8 +216,13 @@
         <div class="flex-1 overflow-auto">
             <!-- Navbar -->
             <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white">
+                <!-- Sidebar Toggle Button -->
+                <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+                
                 <!-- Search Bar -->
-                <div class="relative">
+                <div class="relative hidden">
                     <input type="text" placeholder="Cari disini.." class="w-96 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500">
                     <div class="absolute left-3 top-2.5">
                         <i class="ph ph-magnifying-glass text-gray-500 text-xl"></i>
@@ -250,6 +299,19 @@
         
         // Panggil sekali saat halaman dimuat
         updateDateTime();
+        
+        // Fungsi untuk toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            
+            // Tutup semua dropdown saat sidebar diciutkan
+            if (sidebar.classList.contains('collapsed')) {
+                document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        }
     </script>
     
     <!-- JavaScript untuk notifikasi saat pindah halaman -->

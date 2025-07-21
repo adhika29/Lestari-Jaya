@@ -18,7 +18,9 @@
         <!-- Chart Gula Masuk Card -->
         <div class="bg-white p-6 rounded-lg shadow-md md:col-span-2">
             <h2 class="text-xl font-semibold mb-6">Gula Masuk</h2>
-            <div class="h-64" id="sugarInputChart"></div>
+            <div class="h-64">
+                <canvas id="sugarInputChart"></canvas>
+            </div>
         </div>
 
         <!-- Stats Cards Container -->
@@ -115,9 +117,10 @@
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-semibold">Filter Data</h3>
-                        <button type="button" id="closeFilterModal" class="text-gray-500 hover:text-gray-700">
-                            <i class="ph ph-x text-xl"></i>
-                        </button>
+                        <div class="flex items-center space-x-4">
+                            <a href="{{ route('sugar-input.index') }}" class="text-brown-600 hover:text-brown-800 font-medium">Reset Filter</a>
+                            <!-- Ikon X dihilangkan -->
+                        </div>
                     </div>
                     
                     <form action="{{ route('sugar-input.index') }}" method="GET">
@@ -215,55 +218,75 @@
         // Data untuk chart gula masuk
         const chartData = @json($chartData);
         
+        // Debugging - tampilkan data di console
+        console.log('Chart Data:', chartData);
+        
         // Cek apakah ada data chart
         if (chartData && chartData.length > 0) {
             const labels = chartData.map(item => item.tanggal);
             const values = chartData.map(item => item.sak);
+            
+            console.log('Labels:', labels);
+            console.log('Values:', values);
 
             // Chart Gula Masuk
-            const ctx = document.getElementById('sugarInputChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Jumlah Sak',
-                        data: values,
-                        backgroundColor: 'rgba(109, 69, 52, 0.2)',
-                        borderColor: 'rgba(109, 69, 52, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(109, 69, 52, 1)',
-                        pointRadius: 4,
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(200, 200, 200, 0.2)'
+            const ctx = document.getElementById('sugarInputChart');
+            if (!ctx) {
+                console.error('Canvas element not found!');
+                return;
+            }
+            
+            try {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Jumlah Sak',
+                            data: values,
+                            backgroundColor: 'rgba(109, 69, 52, 0.2)',
+                            borderColor: 'rgba(109, 69, 52, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(109, 69, 52, 1)',
+                            pointRadius: 4,
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(200, 200, 200, 0.2)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
                             }
                         },
-                        x: {
-                            grid: {
+                        plugins: {
+                            legend: {
                                 display: false
                             }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
                     }
-                }
-            });
+                });
+                console.log('Chart created successfully');
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
         } else {
             // Tampilkan pesan jika tidak ada data
-            document.getElementById('sugarInputChart').innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data untuk ditampilkan</div>';
+            const chartElement = document.getElementById('sugarInputChart');
+            if (chartElement) {
+                chartElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data untuk ditampilkan</div>';
+                console.log('No data available for chart');
+            }
         }
     });
 </script>

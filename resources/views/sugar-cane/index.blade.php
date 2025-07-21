@@ -290,6 +290,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Debugging - log data yang diterima
+        console.log('Pengirim Data:', @json($pengirimData));
+        console.log('Jenis Tebu Data:', @json($jenisTebuData));
+        
         // Data untuk chart pengirim
         const pengirimData = @json($pengirimData);
         
@@ -305,31 +309,44 @@
                 '#9C27B0'  // Ungu
             ];
 
-            // Chart Pengirim
-            const pengirimCtx = document.getElementById('pengirimChart').getContext('2d');
-            new Chart(pengirimCtx, {
-                type: 'pie',
-                data: {
-                    labels: pengirimLabels,
-                    datasets: [{
-                        data: pengirimValues,
-                        backgroundColor: pengirimColors,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
+            // Pastikan canvas element ada
+            const pengirimCanvas = document.getElementById('pengirimChart');
+            if (pengirimCanvas) {
+                // Buat canvas element jika belum ada
+                if (!pengirimCanvas.querySelector('canvas')) {
+                    const canvas = document.createElement('canvas');
+                    pengirimCanvas.appendChild(canvas);
+                }
+                
+                // Chart Pengirim
+                const pengirimCtx = pengirimCanvas.querySelector('canvas').getContext('2d');
+                new Chart(pengirimCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: pengirimLabels,
+                        datasets: [{
+                            data: pengirimValues,
+                            backgroundColor: pengirimColors,
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         } else {
             // Tampilkan pesan jika tidak ada data
-            document.getElementById('pengirimChart').innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data pengirim</div>';
+            const pengirimChart = document.getElementById('pengirimChart');
+            if (pengirimChart) {
+                pengirimChart.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data pengirim</div>';
+            }
         }
 
         // Data untuk chart jenis tebu
@@ -347,31 +364,44 @@
                 '#9966FF'  // Ungu
             ];
 
-            // Chart Jenis Tebu
-            const jenisTebuCtx = document.getElementById('jenisTebuChart').getContext('2d');
-            new Chart(jenisTebuCtx, {
-                type: 'pie',
-                data: {
-                    labels: jenisTebuLabels,
-                    datasets: [{
-                        data: jenisTebuValues,
-                        backgroundColor: jenisTebuColors,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
+            // Pastikan canvas element ada
+            const jenisTebuCanvas = document.getElementById('jenisTebuChart');
+            if (jenisTebuCanvas) {
+                // Buat canvas element jika belum ada
+                if (!jenisTebuCanvas.querySelector('canvas')) {
+                    const canvas = document.createElement('canvas');
+                    jenisTebuCanvas.appendChild(canvas);
+                }
+                
+                // Chart Jenis Tebu
+                const jenisTebuCtx = jenisTebuCanvas.querySelector('canvas').getContext('2d');
+                new Chart(jenisTebuCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: jenisTebuLabels,
+                        datasets: [{
+                            data: jenisTebuValues,
+                            backgroundColor: jenisTebuColors,
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         } else {
             // Tampilkan pesan jika tidak ada data
-            document.getElementById('jenisTebuChart').innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data jenis tebu</div>';
+            const jenisTebuChart = document.getElementById('jenisTebuChart');
+            if (jenisTebuChart) {
+                jenisTebuChart.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Tidak ada data jenis tebu</div>';
+            }
         }
     });
 </script>

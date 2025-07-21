@@ -13,6 +13,15 @@ class SugarInputController extends Controller
     {
         $query = SugarInput::latest();
         
+        // Filter berdasarkan tanggal awal dan akhir
+        if ($request->has('tanggal_awal') && $request->tanggal_awal) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_awal);
+        }
+        
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
+        }
+        
         // Filter berdasarkan bulan dan tahun jika ada
         if ($request->has('bulan') && $request->bulan) {
             $query->whereMonth('tanggal', $request->bulan);
@@ -59,10 +68,21 @@ class SugarInputController extends Controller
         $bobotChangeClass = $bobotChange >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
         
         // Data untuk chart gula masuk (15 hari terakhir)
+        $rawData = SugarInput::select('tanggal', 'sak')->get();
+        
+        // Debugging - cek jumlah data yang tersedia
+        \Log::info('Total SugarInput records: ' . $rawData->count());
+        
         $chartData = SugarInput::select('tanggal', 'sak')
-            ->orderBy('tanggal')
-            ->limit(15)
-            ->get()
+            ->orderBy('tanggal', 'desc') // Urutkan dari tanggal terbaru
+            ->take(15) // Ambil 15 data terakhir
+            ->get();
+            
+        // Debugging - cek data yang diambil
+        \Log::info('Chart data count: ' . $chartData->count());
+        
+        $chartData = $chartData->sortBy('tanggal') // Urutkan kembali untuk tampilan chart dari kiri ke kanan
+            ->values() // Reset indeks array
             ->map(function ($item) {
                 return [
                     'tanggal' => $item->tanggal->format('d/m/Y'),

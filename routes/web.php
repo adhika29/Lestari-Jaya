@@ -45,6 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/biaya-konsumsi/export-pdf', [BiayaKonsumsiController::class, 'exportPdf'])->name('biaya-konsumsi.export-pdf');
     Route::get('/biaya-operasional/export-pdf', [BiayaOperasionalController::class, 'exportPdf'])->name('biaya-operasional.export-pdf');
     
+    // Route untuk autocomplete sender (PINDAHKAN KE SINI)
+    Route::get('/sugar-cane/senders', [SugarCaneShipmentController::class, 'getSenders'])->name('sugar-cane.senders');
+    
     // Definisi resource untuk sugar-cane
     Route::resource('sugar-cane', SugarCaneShipmentController::class);
     Route::resource('sugar-input', SugarInputController::class);

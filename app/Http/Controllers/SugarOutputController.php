@@ -109,7 +109,14 @@ class SugarOutputController extends Controller
 
     public function create()
     {
-        return view('sugar-output.create');
+        // Ambil data pembeli yang sudah ada untuk dropdown
+        $pembeliData = SugarOutput::select('nama_pembeli')
+            ->distinct()
+            ->orderBy('nama_pembeli')
+            ->pluck('nama_pembeli')
+            ->toArray();
+            
+        return view('sugar-output.create', compact('pembeliData'));
     }
 
     public function store(Request $request)
@@ -140,7 +147,14 @@ class SugarOutputController extends Controller
 
     public function edit(SugarOutput $sugarOutput)
     {
-        return view('sugar-output.edit', compact('sugarOutput'));
+        // Ambil data pembeli yang sudah ada untuk dropdown
+        $pembeliData = SugarOutput::select('nama_pembeli')
+            ->distinct()
+            ->orderBy('nama_pembeli')
+            ->pluck('nama_pembeli')
+            ->toArray();
+            
+        return view('sugar-output.edit', compact('sugarOutput', 'pembeliData'));
     }
 
     public function update(Request $request, SugarOutput $sugarOutput)

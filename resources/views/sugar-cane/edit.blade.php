@@ -90,14 +90,12 @@
                 
                 <!-- Hapus informasi bobot otomatis -->
 
-                <div class="flex justify-center mt-6">
+                <div class="flex justify-end mt-6">
                     <a href="{{ route('sugar-cane.index') }}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 mr-4">Batal</a>
-                    <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Simpan Perubahan</button>
+                    <button type="submit" class="px-6 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600">Simpan</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 @endsection
-
-<!-- Hapus script JavaScript perhitungan otomatis -->
