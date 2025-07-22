@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SugarOutput;
 use Illuminate\Http\Request;
+use PDF;
 use Illuminate\Support\Facades\DB;
 
 class SugarOutputController extends Controller
@@ -211,16 +212,57 @@ class SugarOutputController extends Controller
     public function getBuyers(Request $request)
     {
         $search = $request->get('q');
-        
-        $buyers = SugarOutput::select('nama_pembeli')
-            ->distinct()
-            ->when($search, function ($query, $search) {
-                return $query->where('nama_pembeli', 'like', '%' . $search . '%');
-            })
-            ->orderBy('nama_pembeli')
-            ->pluck('nama_pembeli')
-            ->toArray();
+        $buyers = SugarOutput::where('nama_pembeli', 'like', '%' . $search . '%')
+                            ->distinct()
+                            ->pluck('nama_pembeli')
+                            ->take(10);
         
         return response()->json($buyers);
+    }
+    
+    public function exportPdf(Request $request)
+    {
+        $query = SugarOutput::query();
+        
+        // Filter berdasarkan pencarian
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_pembeli', 'like', '%' . $search . '%')
+                  ->orWhere('sak', 'like', '%' . $search . '%')
+                  ->orWhere('bobot', 'like', '%' . $search . '%')
+                  ->orWhere('harga_per_kg', 'like', '%' . $search . '%')
+                  ->orWhere('total_harga', 'like', '%' . $search . '%');
+            });
+        }
+        
+        // Filter berdasarkan tanggal
+        if ($request->has('tanggal_mulai') && $request->tanggal_mulai) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
+        }
+        
+        if ($request->has('tanggal_selesai') && $request->tanggal_selesai) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_selesai);
+        }
+        
+        // Filter berdasarkan pembeli
+        if ($request->has('nama_pembeli') && $request->nama_pembeli) {
+            $query->where('nama_pembeli', $request->nama_pembeli);
+        }
+        
+        // Filter berdasarkan bulan
+        if ($request->has('bulan') && $request->bulan) {
+            $query->whereMonth('tanggal', $request->bulan);
+        }
+        
+        // Filter berdasarkan tahun
+        if ($request->has('tahun') && $request->tahun) {
+            $query->whereYear('tanggal', $request->tahun);
+        }
+        
+        $outputs = $query->orderBy('tanggal', 'desc')->get();
+        
+        $pdf = PDF::loadView('sugar-output.pdf', compact('outputs'));
+        return $pdf->download('laporan-gula-keluar.pdf');
     }
 }

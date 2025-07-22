@@ -55,7 +55,36 @@ class GajiKaryawanController extends Controller
         
         $gajiKaryawan = $query->with('karyawan')->orderBy('tanggal', 'desc')->paginate(10);
         
-        return view('gaji-karyawan.index', compact('gajiKaryawan'));
+        // Hitung total keseluruhan gaji karyawan
+        $totalKeseluruhanGaji = GajiKaryawan::when($request->has('tanggal_awal') && $request->tanggal_awal, function($q) use ($request) {
+                return $q->whereDate('tanggal', '>=', $request->tanggal_awal);
+            })
+            ->when($request->has('tanggal_akhir') && $request->tanggal_akhir, function($q) use ($request) {
+                return $q->whereDate('tanggal', '<=', $request->tanggal_akhir);
+            })
+            ->when($request->has('karyawan') && !empty($request->karyawan), function($q) use ($request) {
+                return $q->whereHas('karyawan', function($subQ) use ($request) {
+                    $subQ->whereIn('karyawan.id', $request->karyawan);
+                });
+            })
+            ->when($request->has('bulan') && $request->bulan, function($q) use ($request) {
+                return $q->whereMonth('tanggal', $request->bulan);
+            })
+            ->when($request->has('tahun') && $request->tahun, function($q) use ($request) {
+                return $q->whereYear('tanggal', $request->tahun);
+            })
+            ->when($request->has('search') && $request->search, function($q) use ($request) {
+                $search = $request->search;
+                return $q->where(function($subQ) use ($search) {
+                    $subQ->where('sak', 'like', "%{$search}%")
+                        ->orWhere('bobot_kg', 'like', "%{$search}%")
+                        ->orWhere('jumlah_gula_ton', 'like', "%{$search}%")
+                        ->orWhere('total_gaji', 'like', "%{$search}%");
+                });
+            })
+            ->sum('total_gaji');
+        
+        return view('gaji-karyawan.index', compact('gajiKaryawan', 'totalKeseluruhanGaji'));
     }
 
     /**

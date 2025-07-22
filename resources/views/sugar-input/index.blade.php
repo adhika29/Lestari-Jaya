@@ -79,14 +79,35 @@
 
         <!-- Search and Filter -->
         <div class="flex items-center mb-6">
-            <div class="relative mr-4">
-                <input type="text" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
+            <!-- Update search form -->
+            <form action="{{ route('sugar-input.index') }}" method="GET" class="relative mr-4">
+                <!-- Preserve existing filters -->
+                @if(request('bulan'))
+                    <input type="hidden" name="bulan" value="{{ request('bulan') }}">
+                @endif
+                @if(request('tahun'))
+                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                @endif
+                @if(request('tanggal_awal'))
+                    <input type="hidden" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
+                @endif
+                @if(request('tanggal_akhir'))
+                    <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
+                @endif
+                
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
                 <div class="absolute left-3 top-2.5">
                     <i class="ph ph-magnifying-glass text-gray-500"></i>
                 </div>
-            </div>
+                <button type="submit" class="sr-only">Search</button>
+            </form>
 
             <form action="{{ route('sugar-input.index') }}" method="GET" id="monthYearFilterForm" class="flex items-center space-x-4">
+                <!-- Preserve search term -->
+                @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                
                 <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500" onchange="document.getElementById('monthYearFilterForm').submit()">
                     <option value="">Bulan</option>
                     @for ($i = 1; $i <= 12; $i++)
@@ -250,10 +271,10 @@
                         datasets: [{
                             label: 'Jumlah Sak',
                             data: values,
-                            backgroundColor: 'rgba(109, 69, 52, 0.2)',
-                            borderColor: 'rgba(109, 69, 52, 1)',
+                            backgroundColor: 'rgba(161, 204, 165, 0.2)',
+                            borderColor: 'rgba(161, 204, 165, 1)',
                             borderWidth: 2,
-                            pointBackgroundColor: 'rgba(109, 69, 52, 1)',
+                            pointBackgroundColor: 'rgba(161, 204, 165, 1)',
                             pointRadius: 4,
                             tension: 0.3,
                             fill: true

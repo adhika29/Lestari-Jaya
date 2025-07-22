@@ -13,6 +13,16 @@ class SugarInputController extends Controller
     {
         $query = SugarInput::latest();
         
+        // Tambahkan fungsionalitas pencarian
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('sak', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('bobot', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhereDate('tanggal', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+        
         // Filter berdasarkan tanggal awal dan akhir
         if ($request->has('tanggal_awal') && $request->tanggal_awal) {
             $query->whereDate('tanggal', '>=', $request->tanggal_awal);

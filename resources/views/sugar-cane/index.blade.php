@@ -103,12 +103,38 @@
         <div class="mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
+                    <!-- Update search form -->
+                    <form action="{{ route('sugar-cane.index') }}" method="GET" class="relative">
+                        <!-- Preserve existing filters -->
+                        @if(request('bulan'))
+                            <input type="hidden" name="bulan" value="{{ request('bulan') }}">
+                        @endif
+                        @if(request('tahun'))
+                            <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                        @endif
+                        @if(request('tanggal_awal'))
+                            <input type="hidden" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
+                        @endif
+                        @if(request('tanggal_akhir'))
+                            <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
+                        @endif
+                        @if(request('jenis_tebu'))
+                            @foreach(request('jenis_tebu') as $jenis)
+                                <input type="hidden" name="jenis_tebu[]" value="{{ $jenis }}">
+                            @endforeach
+                        @endif
+                        @if(request('pengirim'))
+                            @foreach(request('pengirim') as $pengirim)
+                                <input type="hidden" name="pengirim[]" value="{{ $pengirim }}">
+                            @endforeach
+                        @endif
+                    
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
                         <div class="absolute left-3 top-2.5">
                             <i class="ph ph-magnifying-glass text-gray-500"></i>
                         </div>
-                    </div>
+                        <button type="submit" class="sr-only">Search</button>
+                    </form>
 
                     <form action="{{ route('sugar-cane.index') }}" method="GET" id="monthYearFilterForm" class="flex items-center space-x-4">
                         <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500" onchange="document.getElementById('monthYearFilterForm').submit()">
@@ -156,6 +182,11 @@
                     </div>
                     
                     <form action="{{ route('sugar-cane.index') }}" method="GET">
+                        <!-- Preserve search term in filter modal -->
+                        @if(request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                        
                         <!-- Tanggal Filter -->
                         <div class="mb-4 border-b border-gray-200 pb-4">
                             <div class="flex justify-between items-center mb-2 cursor-pointer" id="tanggalHeader">
@@ -276,9 +307,30 @@
                         <td colspan="8" class="py-6 text-center text-gray-500">Tidak ada data pengiriman tebu</td>
                     </tr>
                     @endforelse
+                    
+                    <!-- Total Harga Keseluruhan sebagai baris terakhir -->
+                    <tr class="bg-brown-100 border-t-2 border-brown-300">
+                        <td class="py-3 px-4 font-bold" colspan="6">Total Harga Keseluruhan:</td>
+                        <td class="py-3 px-4 font-bold">Rp{{ number_format($totalKeseluruhanHarga ?? 0, 0, ',', '.') }}</td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Hapus bagian Total Harga Keseluruhan yang terpisah -->
+        <!-- Total Harga Keseluruhan -->
+        <!-- <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <tbody>
+                    <tr class="bg-gray-100 border-b">
+                        <td class="py-3 px-4 font-bold" colspan="6">Total Harga Keseluruhan:</td>
+                        <td class="py-3 px-4 font-bold">Rp{{ number_format($totalKeseluruhanHarga ?? 0, 0, ',', '.') }}</td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> -->
 
         <!-- Pagination -->
         <div class="mt-6 flex justify-between items-center">

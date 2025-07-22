@@ -137,6 +137,12 @@
                         <td colspan="8" class="py-6 text-center text-gray-500">Tidak ada data biaya konsumsi</td>
                     </tr>
                     @endforelse
+                    <!-- Total Harga Keseluruhan -->
+                    <tr class="bg-brown-100 border-t-2 border-brown-300">
+                        <td colspan="6" class="py-3 px-4 font-bold">Total Harga Keseluruhan:</td>
+                        <td class="py-3 px-4 font-bold">Rp{{ number_format($totalKeseluruhanHarga ?? 0, 0, ',', '.') }}</td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -254,8 +260,8 @@
                 datasets: [{
                     label: 'Total Biaya (Rp)',
                     data: chartDataTanggal.map(item => item.total),
-                    backgroundColor: 'rgba(139, 69, 19, 0.7)',
-                    borderColor: 'rgba(139, 69, 19, 1)',
+                    backgroundColor: 'rgba(161, 204, 165, 0.8)',
+                    borderColor: 'rgba(161, 204, 165, 1)',
                     borderWidth: 1
                 }]
             },
@@ -293,16 +299,16 @@
 
         // Pie Chart - Biaya per Keterangan
         const ctxKeterangan = document.getElementById('biayaPerKeteranganChart').getContext('2d');
-        
-        // Warna yang digunakan untuk chart
+
+        // Warna yang digunakan untuk chart - tema hijau
         const chartColors = [
-            '#4F86F7', // Biru
-            '#FF6B6B', // Merah
-            '#4CAF50', // Hijau
-            '#FFA500', // Oranye
-            '#9C27B0'  // Ungu
+            'rgba(76, 175, 80, 0.8)',    // Hijau medium
+            'rgba(129, 199, 132, 0.8)',  // Hijau terang
+            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
+            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
+            'rgba(102, 187, 106, 0.8)'   // Hijau segar
         ];
-        
+
         new Chart(ctxKeterangan, {
             type: 'pie',
             data: {

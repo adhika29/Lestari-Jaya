@@ -13,6 +13,18 @@ class SugarCaneShipmentController extends Controller
     {
         $query = SugarCaneShipment::latest();
         
+        // Tambahkan fungsionalitas pencarian
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nama_pengirim', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_tebu', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('bobot_kg', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('harga_per_kg', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('total_harga', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+        
         // Filter berdasarkan tanggal awal dan akhir
         if ($request->has('tanggal_awal') && $request->tanggal_awal) {
             $query->whereDate('tanggal', '>=', $request->tanggal_awal);
@@ -64,7 +76,10 @@ class SugarCaneShipmentController extends Controller
         // Data untuk rata-rata harga
         $avgHarga = SugarCaneShipment::avg('harga_per_kg');
         
-        return view('sugar-cane.index', compact('shipments', 'pengirimData', 'jenisTebuData', 'avgBobot', 'avgHarga'));
+        // Hitung total keseluruhan harga (dengan filter yang sama)
+        $totalKeseluruhanHarga = $query->sum('total_harga');
+        
+        return view('sugar-cane.index', compact('shipments', 'pengirimData', 'jenisTebuData', 'avgBobot', 'avgHarga', 'totalKeseluruhanHarga'));
     }
 
     public function create()

@@ -58,7 +58,7 @@
             </form>
 
             <div class="ml-auto flex space-x-2">
-                <a href="#" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
+                <a href="{{ route('biaya-operasional.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
@@ -111,6 +111,12 @@
                         <td colspan="8" class="py-6 text-center text-gray-500">Tidak ada data biaya operasional</td>
                     </tr>
                     @endforelse
+                    <!-- Total Harga Keseluruhan -->
+                    <tr class="bg-brown-100 border-t-2 border-brown-300">
+                        <td colspan="6" class="py-3 px-4 font-bold">Total Harga Keseluruhan:</td>
+                        <td class="py-3 px-4 font-bold">Rp{{ number_format($totalKeseluruhanHarga ?? 0, 0, ',', '.') }}</td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

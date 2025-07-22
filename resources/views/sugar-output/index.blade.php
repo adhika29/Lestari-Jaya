@@ -95,11 +95,11 @@
                 @foreach($pembeliChartData as $index => $pembeli)
                     @php
                         $colors = [
-                            'rgba(139, 69, 19, 0.8)',
-                            'rgba(205, 133, 63, 0.7)',
-                            'rgba(160, 82, 45, 0.7)',
-                            'rgba(210, 105, 30, 0.7)',
-                            'rgba(165, 42, 42, 0.7)'
+                            'rgba(76, 175, 80, 0.8)',    // Hijau medium
+                            'rgba(129, 199, 132, 0.8)',  // Hijau terang
+                            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
+                            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
+                            'rgba(102, 187, 106, 0.8)'   // Hijau segar
                         ];
                         $color = $colors[$index % count($colors)];
                     @endphp
@@ -156,7 +156,7 @@
             </form>
 
             <div class="ml-auto flex space-x-2">
-                <a href="#" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
+                <a href="{{ route('sugar-output.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
@@ -210,6 +210,13 @@
                         <td colspan="8" class="py-6 text-center text-gray-500">Tidak ada data gula keluar</td>
                     </tr>
                     @endforelse
+                    
+                    <!-- Total Harga Keseluruhan sebagai baris terakhir -->
+                    <tr class="bg-brown-100 border-t-2 border-brown-300">
+                        <td class="py-3 px-4 font-bold" colspan="6">Total Harga Keseluruhan:</td>
+                        <td class="py-3 px-4 font-bold">Rp{{ number_format($totalHarga ?? 0, 0, ',', '.') }}</td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -241,8 +248,8 @@ const sakData = {
     datasets: [{
         label: 'Jumlah Sak: {{ number_format($totalSak) }} total',
         data: sakValues,
-        borderColor: 'rgba(109, 69, 52, 1)',
-        backgroundColor: 'rgba(109, 69, 52, 0.2)',
+        borderColor: 'rgba(161, 204, 165, 1)',
+        backgroundColor: 'rgba(161, 204, 165, 0.2)',
         tension: 0.4,
         fill: true
     }]
@@ -258,11 +265,11 @@ const pembeliData = {
     datasets: [{
         data: pembeliValues,
         backgroundColor: [
-            'rgba(139, 69, 19, 0.8)',
-            'rgba(205, 133, 63, 0.7)',
-            'rgba(160, 82, 45, 0.7)',
-            'rgba(210, 105, 30, 0.7)',
-            'rgba(165, 42, 42, 0.7)'
+            'rgba(76, 175, 80, 0.8)',    // Hijau medium
+            'rgba(129, 199, 132, 0.8)',  // Hijau terang
+            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
+            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
+            'rgba(102, 187, 106, 0.8)'   // Hijau segar
         ]
     }]
 };

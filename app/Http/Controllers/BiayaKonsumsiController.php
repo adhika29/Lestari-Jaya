@@ -61,6 +61,9 @@ class BiayaKonsumsiController extends Controller
             ->limit(5)
             ->get();
         
+        // Calculate total overall price
+        $totalKeseluruhanHarga = $query->sum('total_harga');
+        
         $biayaKonsumsi = $query->paginate(10);
         
         // Ambil daftar keterangan unik untuk dropdown
@@ -70,10 +73,11 @@ class BiayaKonsumsiController extends Controller
                             ->pluck('keterangan');
         
         return view('biaya-pengeluaran.index', compact(
-            'biayaKonsumsi', 
-            'keteranganList', 
-            'chartDataTanggal', 
-            'chartDataKeterangan'
+            'biayaKonsumsi',
+            'keteranganList',
+            'chartDataTanggal',
+            'chartDataKeterangan',
+            'totalKeseluruhanHarga'
         ));
     }
 

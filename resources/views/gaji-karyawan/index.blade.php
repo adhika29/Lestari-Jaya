@@ -205,10 +205,25 @@
                         <td colspan="11" class="py-6 text-center text-gray-500">Tidak ada data gaji karyawan</td>
                     </tr>
                     @endforelse
+                    
+                    @if($gajiKaryawan->count() > 0)
+                    <!-- Total Keseluruhan Gaji Karyawan -->
+                    <tr class="bg-brown-100 border-t-2 border-brown-300">
+                        <td class="py-3 px-4 font-bold text-left" colspan="9">
+                            Total Keseluruhan Gaji Karyawan:
+                        </td>
+                        <td class="py-3 px-4 font-bold">
+                            Rp{{ number_format($totalKeseluruhanGaji, 0, ',', '.') }}
+                        </td>
+                        <td class="py-3 px-4"></td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
-
+        
+        <!-- Hapus bagian Total Keseluruhan Gaji Karyawan yang terpisah -->
+        
         <!-- Pagination -->
         <div class="mt-6 flex justify-between items-center">
             <div class="text-gray-600">

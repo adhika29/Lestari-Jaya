@@ -54,6 +54,9 @@ class BiayaOperasionalController extends Controller
             ->limit(5)
             ->get();
         
+        // Calculate total overall price
+        $totalKeseluruhanHarga = $query->sum('total_harga');
+        
         $biayaOperasional = $query->orderBy('tanggal', 'desc')->paginate(10);
         
         // Ambil daftar keterangan unik untuk dropdown
@@ -66,7 +69,8 @@ class BiayaOperasionalController extends Controller
             'biayaOperasional', 
             'keteranganList',
             'chartDataTanggal',
-            'chartDataKeterangan'
+            'chartDataKeterangan',
+            'totalKeseluruhanHarga'
         ));
     }
 
