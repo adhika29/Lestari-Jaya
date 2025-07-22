@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
@@ -22,4 +22,8 @@ export default {
   plugins: [
     require('@tailwindcss/forms'),
   ],
+  // Pastikan scroll-smooth utility tersedia
+  corePlugins: {
+    scrollBehavior: true
+  }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -123,6 +123,21 @@
         
         .main-content {
             transition: margin-left 0.3s ease;
+        }
+        
+        /* Tambahkan CSS untuk smooth scroll */
+        /* Force smooth scroll dengan !important */
+        html, body {
+            scroll-behavior: smooth !important;
+        }
+        
+        .overflow-auto, .overflow-y-auto, .overflow-x-auto {
+            scroll-behavior: smooth !important;
+        }
+        
+        /* Untuk semua elemen */
+        * {
+            scroll-behavior: smooth !important;
         }
     </style>
     <!-- Di bagian head, tambahkan: -->
@@ -444,6 +459,106 @@
                     dropdown.classList.add('active');
                 }
             }
+        });
+    </script>
+    
+    <!-- Global Smooth Scroll Script -->
+    <script>
+        // Implementasi smooth scroll global
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set smooth scroll untuk html dan body
+            document.documentElement.style.scrollBehavior = 'smooth';
+            document.body.style.scrollBehavior = 'smooth';
+            
+            // Set smooth scroll untuk semua container yang bisa di-scroll
+            const scrollableElements = document.querySelectorAll('.overflow-auto, .overflow-y-auto, .overflow-x-auto');
+            scrollableElements.forEach(element => {
+                element.style.scrollBehavior = 'smooth';
+            });
+            
+            // Smooth scroll untuk semua link anchor
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Smooth scroll untuk pagination
+            document.querySelectorAll('.pagination a').forEach(link => {
+                link.addEventListener('click', function() {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                });
+            });
+            
+            // Smooth scroll untuk form submission
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                });
+            });
+        });
+        
+        // Fungsi helper untuk smooth scroll ke elemen tertentu
+        function smoothScrollTo(element, duration = 800) {
+            if (typeof element === 'string') {
+                element = document.querySelector(element);
+            }
+            
+            if (!element) return;
+            
+            const targetPosition = element.offsetTop;
+            const startPosition = window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const run = ease(timeElapsed, startPosition, distance, duration);
+                window.scrollTo(0, run);
+                if (timeElapsed < duration) requestAnimationFrame(animation);
+            }
+
+            function ease(t, b, c, d) {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimationFrame(animation);
+        }
+        
+        // Smooth scroll untuk navigasi sidebar
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                setTimeout(() => {
+                    const mainContent = document.querySelector('.flex-1.overflow-auto');
+                    if (mainContent) {
+                        mainContent.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 50);
+            });
         });
     </script>
 </body>

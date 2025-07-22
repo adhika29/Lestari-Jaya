@@ -5,10 +5,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SugarCaneShipmentController;
 use App\Http\Controllers\SugarInputController;
 use App\Http\Controllers\SugarOutputController;
-use App\Http\Controllers\BiayaKonsumsiController; // Tambahkan baris ini
-use App\Http\Controllers\BiayaOperasionalController; // Tambahkan baris ini untuk BiayaOperasional
+use App\Http\Controllers\BiayaKonsumsiController;
+use App\Http\Controllers\BiayaOperasionalController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\GajiKaryawanController;
+use App\Http\Controllers\DashboardController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,9 +35,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Dashboard route menggunakan DashboardController
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Route untuk export PDF (HARUS didefinisikan SEBELUM route resource)
     Route::get('/sugar-cane/export-pdf', [SugarCaneShipmentController::class, 'exportPdf'])->name('sugar-cane.export-pdf');
@@ -45,24 +46,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/biaya-konsumsi/export-pdf', [BiayaKonsumsiController::class, 'exportPdf'])->name('biaya-konsumsi.export-pdf');
     Route::get('/biaya-operasional/export-pdf', [BiayaOperasionalController::class, 'exportPdf'])->name('biaya-operasional.export-pdf');
     
-    // Route untuk autocomplete sender (PINDAHKAN KE SINI)
+    // Route untuk autocomplete
     Route::get('/sugar-cane/senders', [SugarCaneShipmentController::class, 'getSenders'])->name('sugar-cane.senders');
+    Route::get('/sugar-output/buyers', [SugarOutputController::class, 'getBuyers'])->name('sugar-output.buyers');
     
-    // Definisi resource untuk sugar-cane
+    // Resource routes
     Route::resource('sugar-cane', SugarCaneShipmentController::class);
     Route::resource('sugar-input', SugarInputController::class);
     Route::resource('sugar-output', SugarOutputController::class);
-    
-    // Tambahkan route untuk biaya-konsumsi
     Route::resource('biaya-konsumsi', BiayaKonsumsiController::class);
     Route::resource('biaya-operasional', BiayaOperasionalController::class);
-    
-    // Tambahkan route untuk karyawan
     Route::resource('karyawan', KaryawanController::class);
     Route::resource('gaji-karyawan', GajiKaryawanController::class);
     
-    // Tambahkan route untuk profil
+    // Profile routes
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.update-password');
-}); // Close middleware group and Route::group
+});

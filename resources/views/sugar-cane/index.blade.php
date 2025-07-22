@@ -28,7 +28,9 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Rata rata bobot</h2>
-                        <div class="text-4xl font-bold">{{ number_format(7900, 0) }} kg</div>
+                        <div class="text-4xl font-bold">{{ number_format($avgBobot ?? 0, 0) }} kg</div>
+                        {{-- Bagian perubahan dari minggu lalu disembunyikan --}}
+                        {{--
                         <div class="mt-2 bg-green-100 text-green-800 px-3 py-1 rounded-full inline-block">
                             @php
                                 // Hitung rata-rata bobot minggu ini
@@ -45,6 +47,7 @@
                             @endphp
                             {{ $changeText }} dari minggu lalu
                         </div>
+                        --}}
                     </div>
                     <div class="w-12 h-12 bg-brown-100 rounded-full flex items-center justify-center">
                         <i class="ph ph-arrow-circle-down text-brown-500 text-xl"></i>
@@ -57,7 +60,9 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h2 class="text-xl font-semibold mb-2">Rata rata harga tebu</h2>
-                        <div class="text-4xl font-bold">Rp{{ number_format(820, 0) }}</div>
+                        <div class="text-4xl font-bold">Rp{{ number_format($avgHarga ?? 0, 0) }}</div>
+                        {{-- Bagian perubahan dari minggu lalu disembunyikan --}}
+                        {{--
                         <div class="mt-2 bg-green-100 text-green-800 px-3 py-1 rounded-full inline-block">
                             @php
                                 // Hitung rata-rata harga minggu ini
@@ -74,6 +79,7 @@
                             @endphp
                             {{ $priceChangeText }} dari minggu lalu
                         </div>
+                        --}}
                     </div>
                     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                         <i class="ph ph-arrow-circle-down text-green-500 text-xl"></i>

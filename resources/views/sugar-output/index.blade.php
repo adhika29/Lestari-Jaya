@@ -22,9 +22,12 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">Total Sak</h2>
                     <div class="text-4xl font-bold">{{ number_format($sugarOutputs->sum('sak')) }}</div>
+                    {{-- Bagian data keseluruhan disembunyikan --}}
+                    {{--
                     <div class="mt-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block">
                         Data keseluruhan
                     </div>
+                    --}}
                 </div>
                 <div class="w-12 h-12 bg-brown-100 rounded-full flex items-center justify-center">
                     <i class="ph ph-package text-brown-500 text-xl"></i>
@@ -38,9 +41,12 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">Total Bobot</h2>
                     <div class="text-4xl font-bold">{{ number_format($sugarOutputs->sum('bobot')) }} kg</div>
+                    {{-- Bagian data keseluruhan disembunyikan --}}
+                    {{--
                     <div class="mt-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block">
                         Data keseluruhan
                     </div>
+                    --}}
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <i class="ph ph-scales text-green-500 text-xl"></i>
@@ -54,9 +60,12 @@
                 <div>
                     <h2 class="text-xl font-semibold mb-2">Total Harga</h2>
                     <div class="text-4xl font-bold">Rp{{ number_format($sugarOutputs->sum('total_harga')) }}</div>
+                    {{-- Bagian data keseluruhan disembunyikan --}}
+                    {{--
                     <div class="mt-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-block">
                         Data keseluruhan
                     </div>
+                    --}}
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <i class="ph ph-money text-blue-500 text-xl"></i>
@@ -80,6 +89,25 @@
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Pembeli</h3>
             <div class="h-64">
                 <canvas id="pembeliChart" width="400" height="200"></canvas>
+            </div>
+            <!-- Labels dengan warna -->
+            <div class="mt-4 flex flex-wrap justify-center gap-4">
+                @foreach($pembeliChartData as $index => $pembeli)
+                    @php
+                        $colors = [
+                            'rgba(139, 69, 19, 0.8)',
+                            'rgba(205, 133, 63, 0.7)',
+                            'rgba(160, 82, 45, 0.7)',
+                            'rgba(210, 105, 30, 0.7)',
+                            'rgba(165, 42, 42, 0.7)'
+                        ];
+                        $color = $colors[$index % count($colors)];
+                    @endphp
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 mr-2" style="background-color: {{ $color }};"></div>
+                        <span class="text-sm">{{ $pembeli->nama_pembeli }}: {{ number_format($pembeli->total_sak) }} sak</span>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
@@ -200,24 +228,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Sample data for charts - sesuai dengan gambar
+// Data dari database untuk chart sak keluar
+const sakChartData = @json($sakChartData ?? []);
+const sakLabels = sakChartData.map(item => {
+    const date = new Date(item.tanggal);
+    return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+});
+const sakValues = sakChartData.map(item => item.sak);
+
 const sakData = {
-    labels: ['02/08/2024', '07/08/2024', '11/08/2024', '15/08/2024', '18/08/2024', '24/08/2024'],
+    labels: sakLabels,
     datasets: [{
-        label: '2020',
-        data: [41, 120, 163, 149, 67, 9],
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        label: 'Jumlah Sak: {{ number_format($totalSak) }} total',
+        data: sakValues,
+        borderColor: 'rgba(109, 69, 52, 1)',
+        backgroundColor: 'rgba(109, 69, 52, 0.2)',
         tension: 0.4,
         fill: true
     }]
 };
 
+// Data dari database untuk chart pembeli
+const pembeliChartData = @json($pembeliChartData ?? []);
+const pembeliLabels = pembeliChartData.map(item => item.nama_pembeli);
+const pembeliValues = pembeliChartData.map(item => item.total_sak);
+
 const pembeliData = {
-    labels: ['Wildan', 'Ustadz Baidowi'],
+    labels: pembeliLabels,
     datasets: [{
-        data: [362, 187],
-        backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(34, 197, 94, 0.6)']
+        data: pembeliValues,
+        backgroundColor: [
+            'rgba(139, 69, 19, 0.8)',
+            'rgba(205, 133, 63, 0.7)',
+            'rgba(160, 82, 45, 0.7)',
+            'rgba(210, 105, 30, 0.7)',
+            'rgba(165, 42, 42, 0.7)'
+        ]
     }]
 };
 
@@ -231,8 +277,7 @@ new Chart(sakCtx, {
         maintainAspectRatio: false,
         scales: {
             y: {
-                beginAtZero: true,
-                max: 200
+                beginAtZero: true
             }
         },
         plugins: {
@@ -254,14 +299,12 @@ new Chart(pembeliCtx, {
         maintainAspectRatio: false,
         scales: {
             y: {
-                beginAtZero: true,
-                max: 400
+                beginAtZero: true
             }
         },
         plugins: {
             legend: {
-                display: true,
-                position: 'bottom'
+                display: false
             }
         }
     }
@@ -423,6 +466,48 @@ new Chart(pembeliCtx, {
         if (pembeliContent) {
             pembeliContent.classList.add('hidden');
         }
+
+        // Smooth scrolling implementation
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Smooth scroll untuk pagination links
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                setTimeout(() => {
+                    const container = document.querySelector('.container');
+                    if (container) {
+                        container.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }, 100);
+            });
+        });
+
+        // Smooth scroll untuk tombol "Tambah Gula Keluar"
+        const addButton = document.querySelector('a[href*="create"]');
+        if (addButton) {
+            addButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // Smooth scroll untuk form submission
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            });
+        });
     });
 </script>
 @endsection

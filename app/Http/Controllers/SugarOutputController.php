@@ -93,12 +93,28 @@ class SugarOutputController extends Controller
         $bobotChangeText = $bobotChange >= 0 ? '+ ' . number_format(abs($bobotChange), 1) : '- ' . number_format(abs($bobotChange), 1);
         $bobotChangeClass = $bobotChange >= 0 ? 'text-green-600' : 'text-red-600';
         
+        // Data untuk chart sak keluar (15 hari terakhir)
+        $sakChartData = SugarOutput::select('tanggal', 'sak')
+            ->orderBy('tanggal', 'desc')
+            ->take(15)
+            ->get()
+            ->sortBy('tanggal')
+            ->values();
+        
+        // Data untuk chart pembeli (total sak per pembeli)
+        $pembeliChartData = SugarOutput::select('nama_pembeli', DB::raw('SUM(sak) as total_sak'))
+            ->groupBy('nama_pembeli')
+            ->orderBy('total_sak', 'desc')
+            ->get();
+        
         return view('sugar-output.index', compact(
             'sugarOutputs', 
             'totalSak', 
             'totalBobot',
             'totalHarga',
             'chartData',
+            'sakChartData',
+            'pembeliChartData',
             'sakChangeText',
             'sakChangeClass',
             'bobotChangeText',
@@ -189,5 +205,22 @@ class SugarOutputController extends Controller
 
         return redirect()->route('sugar-output.index')
             ->with('success', 'Data gula keluar berhasil dihapus!');
+    }
+    
+    // Tambahkan method ini untuk autocomplete buyers
+    public function getBuyers(Request $request)
+    {
+        $search = $request->get('q');
+        
+        $buyers = SugarOutput::select('nama_pembeli')
+            ->distinct()
+            ->when($search, function ($query, $search) {
+                return $query->where('nama_pembeli', 'like', '%' . $search . '%');
+            })
+            ->orderBy('nama_pembeli')
+            ->pluck('nama_pembeli')
+            ->toArray();
+        
+        return response()->json($buyers);
     }
 }

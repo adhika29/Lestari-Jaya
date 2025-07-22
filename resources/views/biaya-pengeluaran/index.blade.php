@@ -34,15 +34,8 @@
                 <canvas id="biayaPerKeteranganChart"></canvas>
             </div>
             <!-- Legenda dengan warna dan nilai -->
-            <div class="mt-4 flex justify-center space-x-6">
-                <div class="flex items-center">
-                    <div class="w-4 h-4 mr-2" style="background-color: #8B4513;"></div>
-                    <span class="text-sm">pecel : Rp<span id="totalPecelValue">160.000</span></span>
-                </div>
-                <div class="flex items-center">
-                    <div class="w-4 h-4 mr-2" style="background-color: #CD853F;"></div>
-                    <span class="text-sm">nasi : Rp<span id="totalNasiValue">120.000</span></span>
-                </div>
+            <div class="mt-4 flex justify-center flex-wrap gap-4" id="legendContainer">
+                <!-- Legenda akan dibuat secara dinamis oleh JavaScript -->
             </div>
         </div>
     </div>
@@ -252,21 +245,6 @@
         });
         document.getElementById('totalBiayaTanggal').textContent = 'Rp' + totalBiayaTanggal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-        // Cari total untuk pecel dan nasi
-        let totalPecel = 0;
-        let totalNasi = 0;
-        chartDataKeterangan.forEach(item => {
-            if (item.keterangan.toLowerCase() === 'pecel') {
-                totalPecel = parseFloat(item.total);
-            } else if (item.keterangan.toLowerCase() === 'nasi') {
-                totalNasi = parseFloat(item.total);
-            }
-        });
-
-        // Format dan tampilkan nilai total langsung di legenda
-        document.getElementById('totalPecelValue').textContent = totalPecel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        document.getElementById('totalNasiValue').textContent = totalNasi.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
         // Bar Chart - Biaya per Tanggal
         const ctxTanggal = document.getElementById('biayaPerTanggalChart').getContext('2d');
         new Chart(ctxTanggal, {
@@ -315,26 +293,24 @@
 
         // Pie Chart - Biaya per Keterangan
         const ctxKeterangan = document.getElementById('biayaPerKeteranganChart').getContext('2d');
+        
+        // Warna yang digunakan untuk chart
+        const chartColors = [
+            '#4F86F7', // Biru
+            '#FF6B6B', // Merah
+            '#4CAF50', // Hijau
+            '#FFA500', // Oranye
+            '#9C27B0'  // Ungu
+        ];
+        
         new Chart(ctxKeterangan, {
             type: 'pie',
             data: {
                 labels: chartDataKeterangan.map(item => item.keterangan),
                 datasets: [{
                     data: chartDataKeterangan.map(item => item.total),
-                    backgroundColor: [
-                        'rgba(139, 69, 19, 0.7)',
-                        'rgba(205, 133, 63, 0.7)',
-                        'rgba(160, 82, 45, 0.7)',
-                        'rgba(210, 105, 30, 0.7)',
-                        'rgba(165, 42, 42, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(139, 69, 19, 1)',
-                        'rgba(205, 133, 63, 1)',
-                        'rgba(160, 82, 45, 1)',
-                        'rgba(210, 105, 30, 1)',
-                        'rgba(165, 42, 42, 1)'
-                    ],
+                    backgroundColor: chartColors,
+                    borderColor: chartColors,
                     borderWidth: 1
                 }]
             },
@@ -362,6 +338,29 @@
                 }
             }
         });
+        
+        // Buat legenda dinamis
+        const legendContainer = document.getElementById('legendContainer');
+        if (legendContainer) {
+            legendContainer.innerHTML = ''; // Bersihkan legenda yang ada
+            
+            chartDataKeterangan.forEach((item, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'flex items-center';
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'w-4 h-4 mr-2';
+                colorBox.style.backgroundColor = chartColors[index % chartColors.length];
+                
+                const label = document.createElement('span');
+                label.className = 'text-sm';
+                label.textContent = `${item.keterangan} : Rp${item.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+                
+                legendItem.appendChild(colorBox);
+                legendItem.appendChild(label);
+                legendContainer.appendChild(legendItem);
+            });
+        }
     });
 </script>
 

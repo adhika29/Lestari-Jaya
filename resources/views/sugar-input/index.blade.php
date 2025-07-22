@@ -24,16 +24,19 @@
         </div>
 
         <!-- Stats Cards Container -->
-        <div class="flex flex-col space-y-6">
+        <div class="flex flex-col justify-between h-full space-y-6">
             <!-- Total Sak Card -->
-            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-brown-500">
-                <div class="flex justify-between items-start">
-                    <div>
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-brown-500 flex-1">
+                <div class="flex justify-between items-start h-full">
+                    <div class="flex flex-col justify-center">
                         <h2 class="text-xl font-semibold mb-2">Total Sak</h2>
                         <div class="text-4xl font-bold">{{ number_format($totalSak) }}</div>
+                        {{-- Bagian perubahan dari minggu lalu disembunyikan --}}
+                        {{--
                         <div class="mt-2 {{ $sakChangeClass }} px-3 py-1 rounded-full inline-block">
                             {{ $sakChangeText }}% dari minggu lalu
                         </div>
+                        --}}
                     </div>
                     <div class="w-12 h-12 bg-brown-100 rounded-full flex items-center justify-center">
                         <i class="ph-fill ph-package text-brown-500 text-xl"></i>
@@ -42,14 +45,17 @@
             </div>
 
             <!-- Total Bobot Card -->
-            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
-                <div class="flex justify-between items-start">
-                    <div>
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500 flex-1">
+                <div class="flex justify-between items-start h-full">
+                    <div class="flex flex-col justify-center">
                         <h2 class="text-xl font-semibold mb-2">Total Bobot</h2>
                         <div class="text-4xl font-bold">{{ number_format($totalBobot) }} kg</div>
+                        {{-- Bagian perubahan dari minggu lalu disembunyikan --}}
+                        {{--
                         <div class="mt-2 {{ $bobotChangeClass }} px-3 py-1 rounded-full inline-block">
                             {{ $bobotChangeText }}% dari minggu lalu
                         </div>
+                        --}}
                     </div>
                     <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                         <i class="ph-fill ph-arrow-down-right text-green-500 text-xl"></i>
