@@ -14,6 +14,32 @@
         </div>
     </div>
 
+    <!-- Chart Section - Kotak terpisah seperti pada biaya konsumsi -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Kotak Chart Biaya per Tanggal -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Tren Biaya Operasional</h2>
+            <div class="h-64">
+                <canvas id="biayaPerTanggalChart"></canvas>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-sm font-medium">Total Biaya: <span id="totalBiayaTanggal">Rp0</span></p>
+            </div>
+        </div>
+        
+        <!-- Kotak Chart Keterangan -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Distribusi Biaya Operasional</h2>
+            <div class="h-64">
+                <canvas id="biayaPerKeteranganChart"></canvas>
+            </div>
+            <!-- Legenda dengan warna dan nilai -->
+            <div class="mt-4 flex justify-center flex-wrap gap-4" id="legendContainer">
+                <!-- Legenda akan dibuat secara dinamis oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <!-- Biaya Operasional Table Section -->
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-6">
@@ -62,7 +88,6 @@
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
-                <!-- Tombol ekspor Excel dihapus -->
             </div>
         </div>
 
@@ -148,9 +173,6 @@
             </div>
             
             <form action="{{ route('biaya-operasional.index') }}" method="GET">
-                <!-- Hapus kode JavaScript berikut: -->
-                <!-- Sampai di sini -->
-                <!-- Tombol export dihapus -->
                 <!-- Tanggal Filter -->
                 <div class="mb-4 border-b border-gray-200 pb-4">
                     <div class="flex justify-between items-center mb-2 cursor-pointer" id="tanggalHeader">
@@ -207,6 +229,148 @@
     </div>
 </div>
 
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Script untuk Charts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart Data
+        const chartDataTanggal = @json($chartDataTanggal);
+        const chartDataKeterangan = @json($chartDataKeterangan);
+
+        // Debug: Log data untuk memastikan data tersedia
+        console.log('Chart Data Tanggal:', chartDataTanggal);
+        console.log('Chart Data Keterangan:', chartDataKeterangan);
+
+        // Hitung total biaya untuk tanggal
+        let totalBiayaTanggal = 0;
+        chartDataTanggal.forEach(item => {
+            totalBiayaTanggal += parseFloat(item.total); // Menggunakan 'total' sesuai controller
+        });
+        document.getElementById('totalBiayaTanggal').textContent = 'Rp' + totalBiayaTanggal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        // Line Chart - Biaya per Tanggal
+        const ctxTanggal = document.getElementById('biayaPerTanggalChart').getContext('2d');
+        new Chart(ctxTanggal, {
+            type: 'line',
+            data: {
+                labels: chartDataTanggal.map(item => item.tanggal_formatted),
+                datasets: [{
+                    label: 'Total Biaya (Rp)',
+                    data: chartDataTanggal.map(item => item.total), // Menggunakan 'total' sesuai controller
+                    backgroundColor: 'rgba(161, 204, 165, 0.2)',
+                    borderColor: 'rgba(161, 204, 165, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += 'Rp' + context.parsed.y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pie Chart - Biaya per Keterangan
+        const ctxKeterangan = document.getElementById('biayaPerKeteranganChart').getContext('2d');
+
+        // Warna yang digunakan untuk chart - tema hijau
+        const chartColors = [
+            'rgba(76, 175, 80, 0.8)',    // Hijau medium
+            'rgba(129, 199, 132, 0.8)',  // Hijau terang
+            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
+            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
+            'rgba(102, 187, 106, 0.8)'   // Hijau segar
+        ];
+
+        new Chart(ctxKeterangan, {
+            type: 'pie',
+            data: {
+                labels: chartDataKeterangan.map(item => item.keterangan),
+                datasets: [{
+                    data: chartDataKeterangan.map(item => item.total), // Menggunakan 'total' sesuai controller
+                    backgroundColor: chartColors,
+                    borderColor: chartColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // Menyembunyikan legenda bawaan Chart.js
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += 'Rp' + context.parsed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Buat legenda dinamis
+        const legendContainer = document.getElementById('legendContainer');
+        if (legendContainer) {
+            legendContainer.innerHTML = ''; // Bersihkan legenda yang ada
+            
+            chartDataKeterangan.forEach((item, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'flex items-center';
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'w-4 h-4 mr-2';
+                colorBox.style.backgroundColor = chartColors[index % chartColors.length];
+                
+                const label = document.createElement('span');
+                label.className = 'text-sm';
+                label.textContent = `${item.keterangan} : Rp${item.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`; // Menggunakan 'total'
+                
+                legendItem.appendChild(colorBox);
+                legendItem.appendChild(label);
+                legendContainer.appendChild(legendItem);
+            });
+        }
+    });
+</script>
+
 <!-- Script untuk Filter Modal -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -230,9 +394,8 @@
         if (openFilterModal && filterModal) {
             openFilterModal.addEventListener('click', function() {
                 filterModal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden'; // Mencegah scroll pada body
+                document.body.style.overflow = 'hidden';
                 
-                // Reinisialisasi Select2 saat modal dibuka
                 $('.select2-keterangan').select2({
                     placeholder: "Pilih keterangan...",
                     allowClear: true,
@@ -245,18 +408,17 @@
         if (closeFilterModal && filterModal) {
             closeFilterModal.addEventListener('click', function() {
                 filterModal.classList.add('hidden');
-                document.body.style.overflow = 'auto'; // Mengaktifkan kembali scroll pada body
+                document.body.style.overflow = 'auto';
             });
         }
 
         if (cancelFilterBtn && filterModal) {
             cancelFilterBtn.addEventListener('click', function() {
                 filterModal.classList.add('hidden');
-                document.body.style.overflow = 'auto'; // Mengaktifkan kembali scroll pada body
+                document.body.style.overflow = 'auto';
             });
         }
 
-        // Tutup modal saat mengklik di luar modal
         filterModal.addEventListener('click', function(e) {
             if (e.target === filterModal) {
                 filterModal.classList.add('hidden');

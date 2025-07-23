@@ -3,7 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Lestari Jaya - Sistem Manajemen Pabrik Gula</title>
+    
+    <!-- Favicon dengan logo LJ -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='10' y='60' font-size='45' font-weight='bold' fill='%23A0522D'%3EL%3C/text%3E%3Ctext x='50' y='60' font-size='45' font-weight='bold' fill='%2322C55E'%3EJ%3C/text%3E%3C/svg%3E">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Phosphor Icons -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
