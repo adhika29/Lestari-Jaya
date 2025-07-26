@@ -82,7 +82,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Data Sak Keluar Chart -->
         <div class="bg-white rounded-xl shadow-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Data Sak Keluar</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Gula Keluar</h3>
             <div class="h-64">
                 <canvas id="sakChart" width="400" height="200"></canvas>
             </div>
@@ -99,11 +99,16 @@
                 @foreach($pembeliChartData as $index => $pembeli)
                     @php
                         $colors = [
-                            'rgba(76, 175, 80, 0.8)',    // Hijau medium
-                            'rgba(129, 199, 132, 0.8)',  // Hijau terang
-                            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
-                            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
-                            'rgba(102, 187, 106, 0.8)'   // Hijau segar
+                            'rgba(95, 158, 160, 0.8)',   // Cadet Blue (biru kehijauan muted)
+                            'rgba(188, 143, 143, 0.8)',  // Rosy Brown (coklat kemerahan soft)
+                            'rgba(119, 136, 153, 0.8)',  // Light Slate Gray (abu-abu biru)
+                            'rgba(205, 192, 176, 0.8)',  // Tan (coklat krem)
+                            'rgba(147, 112, 219, 0.8)',  // Medium Purple (ungu muted)
+                            'rgba(112, 128, 144, 0.8)',  // Slate Gray (abu-abu gelap soft)
+                            'rgba(160, 82, 45, 0.8)',    // Saddle Brown (coklat tanah)
+                            'rgba(106, 90, 205, 0.8)',   // Slate Blue (biru ungu muted)
+                            'rgba(139, 69, 19, 0.8)',    // Saddle Brown (coklat gelap soft)
+                            'rgba(72, 61, 139, 0.8)'     // Dark Slate Blue (biru gelap muted)
                         ];
                         $color = $colors[$index % count($colors)];
                     @endphp
@@ -269,11 +274,16 @@ const pembeliData = {
     datasets: [{
         data: pembeliValues,
         backgroundColor: [
-            'rgba(76, 175, 80, 0.8)',    // Hijau medium
-            'rgba(129, 199, 132, 0.8)',  // Hijau terang
-            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
-            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
-            'rgba(102, 187, 106, 0.8)'   // Hijau segar
+                'rgba(95, 158, 160, 0.8)',   // Cadet Blue (biru kehijauan muted)
+                'rgba(188, 143, 143, 0.8)',  // Rosy Brown (coklat kemerahan soft)
+                'rgba(119, 136, 153, 0.8)',  // Light Slate Gray (abu-abu biru)
+                'rgba(205, 192, 176, 0.8)',  // Tan (coklat krem)
+                'rgba(147, 112, 219, 0.8)',  // Medium Purple (ungu muted)
+                'rgba(112, 128, 144, 0.8)',  // Slate Gray (abu-abu gelap soft)
+                'rgba(160, 82, 45, 0.8)',    // Saddle Brown (coklat tanah)
+                'rgba(106, 90, 205, 0.8)',   // Slate Blue (biru ungu muted)
+                'rgba(139, 69, 19, 0.8)',    // Saddle Brown (coklat gelap soft)
+                'rgba(72, 61, 139, 0.8)'     // Dark Slate Blue (biru gelap muted)
         ]
     }]
 };

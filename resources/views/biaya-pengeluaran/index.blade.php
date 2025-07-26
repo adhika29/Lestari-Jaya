@@ -22,7 +22,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Kotak Chart Pengirim -->
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Biaya</h2>
+            <h2 class="text-xl font-semibold mb-4">Tren Biaya Konsumsi</h2>
             <div class="h-64">
                 <canvas id="biayaPerTanggalChart"></canvas>
             </div>
@@ -33,7 +33,7 @@
         
         <!-- Kotak Chart Keterangan -->
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Keterangan</h2>
+            <h2 class="text-xl font-semibold mb-4">Distribusi Biaya Konsumsi</h2>
             <div class="h-64">
                 <canvas id="biayaPerKeteranganChart"></canvas>
             </div>

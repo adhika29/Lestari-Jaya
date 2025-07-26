@@ -21,7 +21,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Chart Gula Masuk Card -->
         <div class="bg-white p-6 rounded-lg shadow-md md:col-span-2">
-            <h2 class="text-xl font-semibold mb-6">Gula Masuk</h2>
+            <h2 class="text-xl font-semibold mb-6">Tren Gula Masuk</h2>
             <div class="h-64">
                 <canvas id="sugarInputChart"></canvas>
             </div>
