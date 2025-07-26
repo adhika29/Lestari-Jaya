@@ -41,8 +41,36 @@ class BiayaKonsumsiController extends Controller
             $query->whereIn('keterangan', $request->keterangan);
         }
         
-        // Data untuk chart berdasarkan tanggal
-        $chartDataTanggal = BiayaKonsumsi::select(
+        // Buat query terpisah untuk chart dengan filter yang sama
+        $chartQuery = BiayaKonsumsi::query();
+        
+        // Terapkan filter yang sama untuk chart
+        if ($request->has('search') && $request->search) {
+            $chartQuery->where('keterangan', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->has('bulan') && $request->bulan) {
+            $chartQuery->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $chartQuery->whereYear('tanggal', $request->tahun);
+        }
+        
+        if ($request->has('tanggal_dari') && $request->tanggal_dari) {
+            $chartQuery->whereDate('tanggal', '>=', $request->tanggal_dari);
+        }
+        
+        if ($request->has('tanggal_sampai') && $request->tanggal_sampai) {
+            $chartQuery->whereDate('tanggal', '<=', $request->tanggal_sampai);
+        }
+        
+        if ($request->has('keterangan') && !empty($request->keterangan)) {
+            $chartQuery->whereIn('keterangan', $request->keterangan);
+        }
+        
+        // Data untuk chart berdasarkan tanggal dengan filter
+        $chartDataTanggal = (clone $chartQuery)->select(
             DB::raw('DATE_FORMAT(tanggal, "%d/%m/%Y") as tanggal_formatted'),
             DB::raw('SUM(total_harga) as total')
         )
@@ -51,8 +79,8 @@ class BiayaKonsumsiController extends Controller
             ->limit(10)
             ->get();
         
-        // Data untuk chart berdasarkan keterangan
-        $chartDataKeterangan = BiayaKonsumsi::select(
+        // Data untuk chart berdasarkan keterangan dengan filter
+        $chartDataKeterangan = (clone $chartQuery)->select(
             'keterangan',
             DB::raw('SUM(total_harga) as total')
         )
@@ -61,8 +89,8 @@ class BiayaKonsumsiController extends Controller
             ->limit(5)
             ->get();
         
-        // Calculate total overall price
-        $totalKeseluruhanHarga = $query->sum('total_harga');
+        // Calculate total overall price dengan filter
+        $totalKeseluruhanHarga = (clone $chartQuery)->sum('total_harga');
         
         $biayaKonsumsi = $query->paginate(10);
         
@@ -199,5 +227,20 @@ class BiayaKonsumsiController extends Controller
         
         $pdf = PDF::loadView('biaya-pengeluaran.pdf', compact('biayaKonsumsi'));
         return $pdf->download('laporan-biaya-konsumsi.pdf');
+    }
+
+    public function getKeterangan(Request $request)
+    {
+        $query = BiayaKonsumsi::select('keterangan')
+            ->distinct()
+            ->orderBy('keterangan');
+        
+        if ($request->has('q') && $request->q) {
+            $query->where('keterangan', 'like', '%' . $request->q . '%');
+        }
+        
+        $keterangan = $query->pluck('keterangan');
+        
+        return response()->json($keterangan);
     }
 }

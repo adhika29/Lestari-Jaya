@@ -7,6 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Gaji Karyawan</h1>
+    </div>
     <!-- Breadcrumb -->
     <div class="bg-white p-3 rounded-lg shadow-sm mb-4">
         <div class="flex items-center text-sm text-gray-600">

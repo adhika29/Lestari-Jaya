@@ -43,19 +43,47 @@ class SugarOutputController extends Controller
         
         $sugarOutputs = $query->paginate(10);
         
+        // Buat query terpisah untuk chart dengan filter yang sama
+        $chartQuery = SugarOutput::query();
+        
+        // Terapkan filter yang sama untuk chart
+        if ($request->has('search') && $request->search) {
+            $chartQuery->where('nama_pembeli', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->has('tanggal_dari') && $request->tanggal_dari) {
+            $chartQuery->whereDate('tanggal', '>=', $request->tanggal_dari);
+        }
+        
+        if ($request->has('tanggal_sampai') && $request->tanggal_sampai) {
+            $chartQuery->whereDate('tanggal', '<=', $request->tanggal_sampai);
+        }
+        
+        if ($request->has('bulan') && $request->bulan) {
+            $chartQuery->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $chartQuery->whereYear('tanggal', $request->tahun);
+        }
+        
+        if ($request->has('pembeli') && !empty($request->pembeli)) {
+            $chartQuery->whereIn('nama_pembeli', $request->pembeli);
+        }
+        
         // Data pembeli untuk filter
         $pembeliData = SugarOutput::select('nama_pembeli')
             ->distinct()
             ->orderBy('nama_pembeli')
             ->get();
         
-        // Hitung total sak dan total bobot
-        $totalSak = SugarOutput::sum('sak');
-        $totalBobot = SugarOutput::sum('bobot');
-        $totalHarga = SugarOutput::sum('total_harga');
+        // Hitung total sak, bobot, dan harga dengan filter
+        $totalSak = (clone $chartQuery)->sum('sak');
+        $totalBobot = (clone $chartQuery)->sum('bobot');
+        $totalHarga = (clone $chartQuery)->sum('total_harga');
         
-        // Data untuk chart (contoh: data per bulan)
-        $chartData = SugarOutput::select(
+        // Data untuk chart dengan filter (contoh: data per bulan)
+        $chartData = (clone $chartQuery)->select(
             DB::raw('MONTH(tanggal) as bulan'),
             DB::raw('SUM(sak) as total_sak')
         )
@@ -64,49 +92,49 @@ class SugarOutputController extends Controller
         ->orderBy('bulan')
         ->get();
         
-        // Hitung total sak minggu ini
-        $currentWeekSakTotal = SugarOutput::where('tanggal', '>=', now()->startOfWeek())
-                                         ->where('tanggal', '<=', now()->endOfWeek())
-                                         ->sum('sak') ?: 0;
-        
-        // Hitung total sak minggu lalu
-        $lastWeekSakTotal = SugarOutput::where('tanggal', '>=', now()->subWeek()->startOfWeek())
-                                      ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
-                                      ->sum('sak') ?: 0;
-        
-        // Hitung perubahan sak
-        $sakChange = $lastWeekSakTotal > 0 ? (($currentWeekSakTotal - $lastWeekSakTotal) / $lastWeekSakTotal) * 100 : 0;
-        $sakChangeText = $sakChange >= 0 ? '+ ' . number_format(abs($sakChange), 1) : '- ' . number_format(abs($sakChange), 1);
-        $sakChangeClass = $sakChange >= 0 ? 'text-green-600' : 'text-red-600';
-        
-        // Hitung rata-rata bobot minggu ini
-        $currentWeekBobotAvg = SugarOutput::where('tanggal', '>=', now()->startOfWeek())
-                                         ->where('tanggal', '<=', now()->endOfWeek())
-                                         ->avg('bobot') ?: 0;
-        
-        // Hitung rata-rata bobot minggu lalu
-        $lastWeekBobotAvg = SugarOutput::where('tanggal', '>=', now()->subWeek()->startOfWeek())
-                                      ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
-                                      ->avg('bobot') ?: 0;
-        
-        // Hitung perubahan bobot
-        $bobotChange = $lastWeekBobotAvg > 0 ? (($currentWeekBobotAvg - $lastWeekBobotAvg) / $lastWeekBobotAvg) * 100 : 0;
-        $bobotChangeText = $bobotChange >= 0 ? '+ ' . number_format(abs($bobotChange), 1) : '- ' . number_format(abs($bobotChange), 1);
-        $bobotChangeClass = $bobotChange >= 0 ? 'text-green-600' : 'text-red-600';
-        
-        // Data untuk chart sak keluar (15 hari terakhir)
-        $sakChartData = SugarOutput::select('tanggal', 'sak')
+        // Data untuk chart sak keluar dengan filter (15 hari terakhir)
+        $sakChartData = (clone $chartQuery)->select('tanggal', 'sak')
             ->orderBy('tanggal', 'desc')
             ->take(15)
             ->get()
             ->sortBy('tanggal')
             ->values();
         
-        // Data untuk chart pembeli (total sak per pembeli)
-        $pembeliChartData = SugarOutput::select('nama_pembeli', DB::raw('SUM(sak) as total_sak'))
+        // Data untuk chart pembeli dengan filter (total sak per pembeli)
+        $pembeliChartData = (clone $chartQuery)->select('nama_pembeli', DB::raw('SUM(sak) as total_sak'))
             ->groupBy('nama_pembeli')
             ->orderBy('total_sak', 'desc')
             ->get();
+        
+        // Hitung total sak minggu ini dengan filter
+        $currentWeekSakTotal = (clone $chartQuery)->where('tanggal', '>=', now()->startOfWeek())
+                                     ->where('tanggal', '<=', now()->endOfWeek())
+                                     ->sum('sak') ?: 0;
+        
+        // Hitung total sak minggu lalu dengan filter
+        $lastWeekSakTotal = (clone $chartQuery)->where('tanggal', '>=', now()->subWeek()->startOfWeek())
+                                  ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
+                                  ->sum('sak') ?: 0;
+        
+        // Hitung perubahan sak
+        $sakChange = $lastWeekSakTotal > 0 ? (($currentWeekSakTotal - $lastWeekSakTotal) / $lastWeekSakTotal) * 100 : 0;
+        $sakChangeText = $sakChange >= 0 ? '+ ' . number_format(abs($sakChange), 1) : '- ' . number_format(abs($sakChange), 1);
+        $sakChangeClass = $sakChange >= 0 ? 'text-green-600' : 'text-red-600';
+        
+        // Hitung rata-rata bobot minggu ini dengan filter
+        $currentWeekBobotAvg = (clone $chartQuery)->where('tanggal', '>=', now()->startOfWeek())
+                                     ->where('tanggal', '<=', now()->endOfWeek())
+                                     ->avg('bobot') ?: 0;
+        
+        // Hitung rata-rata bobot minggu lalu dengan filter
+        $lastWeekBobotAvg = (clone $chartQuery)->where('tanggal', '>=', now()->subWeek()->startOfWeek())
+                                  ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
+                                  ->avg('bobot') ?: 0;
+        
+        // Hitung perubahan bobot
+        $bobotChange = $lastWeekBobotAvg > 0 ? (($currentWeekBobotAvg - $lastWeekBobotAvg) / $lastWeekBobotAvg) * 100 : 0;
+        $bobotChangeText = $bobotChange >= 0 ? '+ ' . number_format(abs($bobotChange), 1) : '- ' . number_format(abs($bobotChange), 1);
+        $bobotChangeClass = $bobotChange >= 0 ? 'text-green-600' : 'text-red-600';
         
         return view('sugar-output.index', compact(
             'sugarOutputs', 

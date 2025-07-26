@@ -77,8 +77,12 @@
                     <button type="submit" class="w-full bg-brown-500 text-white py-2 px-4 rounded-md hover:bg-brown-600 focus:outline-none focus:ring-2 focus:ring-brown-500 focus:ring-opacity-50 transition duration-200 mb-4">Masuk</button>
                     
                     <div class="text-center">
-                        <p class="text-gray-600">Belum punya akun? <a href="{{ route('register') }}" class="text-green-500 hover:underline">Daftar</a></p>
+                        <p class="text-gray-600">Sistem khusus untuk admin perusahaan</p>
                     </div>
+                    <!-- Hapus bagian ini -->
+                    <!-- <div class="text-center">
+                        <p class="text-gray-600">Belum punya akun? <a href="{{ route('register') }}" class="text-green-500 hover:underline">Daftar</a></p>
+                    </div> -->
                 </form>
             </div>
         </div>

@@ -364,11 +364,16 @@
             const pengirimLabels = pengirimData.map(item => item.nama_pengirim);
             const pengirimValues = pengirimData.map(item => item.total);
             const pengirimColors = [
-                '#4F86F7', // Biru
-                '#FF6B6B', // Merah
-                '#4CAF50', // Hijau
-                '#FFA500', // Oranye
-                '#9C27B0'  // Ungu
+                'rgba(95, 158, 160, 0.8)',   // Cadet Blue (biru kehijauan muted)
+                'rgba(188, 143, 143, 0.8)',  // Rosy Brown (coklat kemerahan soft)
+                'rgba(119, 136, 153, 0.8)',  // Light Slate Gray (abu-abu biru)
+                'rgba(205, 192, 176, 0.8)',  // Tan (coklat krem)
+                'rgba(147, 112, 219, 0.8)',  // Medium Purple (ungu muted)
+                'rgba(112, 128, 144, 0.8)',  // Slate Gray (abu-abu gelap soft)
+                'rgba(160, 82, 45, 0.8)',    // Saddle Brown (coklat tanah)
+                'rgba(106, 90, 205, 0.8)',   // Slate Blue (biru ungu muted)
+                'rgba(139, 69, 19, 0.8)',    // Saddle Brown (coklat gelap soft)
+                'rgba(72, 61, 139, 0.8)'     // Dark Slate Blue (biru gelap muted)
             ];
 
             // Pastikan canvas element ada
@@ -419,11 +424,16 @@
             const jenisTebuLabels = jenisTebuData.map(item => item.jenis_tebu);
             const jenisTebuValues = jenisTebuData.map(item => item.total);
             const jenisTebuColors = [
-                '#36A2EB', // Biru
-                '#FF6384', // Merah
-                '#4BC0C0', // Hijau
-                '#FFCE56', // Kuning
-                '#9966FF'  // Ungu
+                'rgba(95, 158, 160, 0.8)',   // Cadet Blue (biru kehijauan muted)
+                'rgba(188, 143, 143, 0.8)',  // Rosy Brown (coklat kemerahan soft)
+                'rgba(119, 136, 153, 0.8)',  // Light Slate Gray (abu-abu biru)
+                'rgba(205, 192, 176, 0.8)',  // Tan (coklat krem)
+                'rgba(147, 112, 219, 0.8)',  // Medium Purple (ungu muted)
+                'rgba(112, 128, 144, 0.8)',  // Slate Gray (abu-abu gelap soft)
+                'rgba(160, 82, 45, 0.8)',    // Saddle Brown (coklat tanah)
+                'rgba(106, 90, 205, 0.8)',   // Slate Blue (biru ungu muted)
+                'rgba(139, 69, 19, 0.8)',    // Saddle Brown (coklat gelap soft)
+                'rgba(72, 61, 139, 0.8)'     // Dark Slate Blue (biru gelap muted)
             ];
 
             // Pastikan canvas element ada

@@ -43,62 +43,82 @@ class SugarInputController extends Controller
         
         $inputs = $query->paginate(10);
         
-        // Hitung total sak dan total bobot
-        $totalSak = SugarInput::sum('sak');
-        $totalBobot = SugarInput::sum('bobot');
+        // Buat query terpisah untuk chart dengan filter yang sama
+        $chartQuery = SugarInput::query();
         
-        // Hitung rata-rata sak minggu ini
-        $currentWeekSakAvg = SugarInput::where('tanggal', '>=', now()->startOfWeek())
-                                      ->where('tanggal', '<=', now()->endOfWeek())
-                                      ->avg('sak') ?: 0;
+        // Terapkan filter yang sama untuk chart
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $chartQuery->where(function($q) use ($searchTerm) {
+                $q->where('sak', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('bobot', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhereDate('tanggal', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
         
-        // Hitung rata-rata sak minggu lalu
-        $lastWeekSakAvg = SugarInput::where('tanggal', '>=', now()->subWeek()->startOfWeek())
-                                   ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
-                                   ->avg('sak') ?: 0;
+        if ($request->has('tanggal_awal') && $request->tanggal_awal) {
+            $chartQuery->whereDate('tanggal', '>=', $request->tanggal_awal);
+        }
         
-        // Hitung perubahan sak
-        $sakChange = $lastWeekSakAvg > 0 ? (($currentWeekSakAvg - $lastWeekSakAvg) / $lastWeekSakAvg) * 100 : 0;
-        $sakChangeText = $sakChange >= 0 ? '+ ' . number_format(abs($sakChange), 1) : '- ' . number_format(abs($sakChange), 1);
-        $sakChangeClass = $sakChange >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir) {
+            $chartQuery->whereDate('tanggal', '<=', $request->tanggal_akhir);
+        }
         
-        // Hitung rata-rata bobot minggu ini
-        $currentWeekBobotAvg = SugarInput::where('tanggal', '>=', now()->startOfWeek())
-                                         ->where('tanggal', '<=', now()->endOfWeek())
-                                         ->avg('bobot') ?: 0;
+        if ($request->has('bulan') && $request->bulan) {
+            $chartQuery->whereMonth('tanggal', $request->bulan);
+        }
         
-        // Hitung rata-rata bobot minggu lalu
-        $lastWeekBobotAvg = SugarInput::where('tanggal', '>=', now()->subWeek()->startOfWeek())
-                                     ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
-                                     ->avg('bobot') ?: 0;
+        if ($request->has('tahun') && $request->tahun) {
+            $chartQuery->whereYear('tanggal', $request->tahun);
+        }
         
-        // Hitung perubahan bobot
-        $bobotChange = $lastWeekBobotAvg > 0 ? (($currentWeekBobotAvg - $lastWeekBobotAvg) / $lastWeekBobotAvg) * 100 : 0;
-        $bobotChangeText = $bobotChange >= 0 ? '+ ' . number_format(abs($bobotChange), 1) : '- ' . number_format(abs($bobotChange), 1);
-        $bobotChangeClass = $bobotChange >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        // Hitung total sak dan total bobot dengan filter
+        $totalSak = (clone $chartQuery)->sum('sak');
+        $totalBobot = (clone $chartQuery)->sum('bobot');
         
-        // Data untuk chart gula masuk (15 hari terakhir)
-        $rawData = SugarInput::select('tanggal', 'sak')->get();
-        
-        // Debugging - cek jumlah data yang tersedia
-        \Log::info('Total SugarInput records: ' . $rawData->count());
-        
-        $chartData = SugarInput::select('tanggal', 'sak')
-            ->orderBy('tanggal', 'desc') // Urutkan dari tanggal terbaru
-            ->take(15) // Ambil 15 data terakhir
-            ->get();
-            
-        // Debugging - cek data yang diambil
-        \Log::info('Chart data count: ' . $chartData->count());
-        
-        $chartData = $chartData->sortBy('tanggal') // Urutkan kembali untuk tampilan chart dari kiri ke kanan
-            ->values() // Reset indeks array
+        // Data untuk chart gula masuk dengan filter (15 hari terakhir dari data yang difilter)
+        $chartData = (clone $chartQuery)->select('tanggal', 'sak')
+            ->orderBy('tanggal', 'desc')
+            ->take(15)
+            ->get()
+            ->sortBy('tanggal')
+            ->values()
             ->map(function ($item) {
                 return [
                     'tanggal' => $item->tanggal->format('d/m/Y'),
                     'sak' => $item->sak
                 ];
             });
+        
+        // Hitung rata-rata sak minggu ini dengan filter
+        $currentWeekSakAvg = (clone $chartQuery)->where('tanggal', '>=', now()->startOfWeek())
+                                  ->where('tanggal', '<=', now()->endOfWeek())
+                                  ->avg('sak') ?: 0;
+        
+        // Hitung rata-rata sak minggu lalu dengan filter
+        $lastWeekSakAvg = (clone $chartQuery)->where('tanggal', '>=', now()->subWeek()->startOfWeek())
+                               ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
+                               ->avg('sak') ?: 0;
+        
+        // Hitung perubahan sak
+        $sakChange = $lastWeekSakAvg > 0 ? (($currentWeekSakAvg - $lastWeekSakAvg) / $lastWeekSakAvg) * 100 : 0;
+        $sakChangeText = $sakChange >= 0 ? '+ ' . number_format(abs($sakChange), 1) : '- ' . number_format(abs($sakChange), 1);
+        $sakChangeClass = $sakChange >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        
+        // Hitung rata-rata bobot minggu ini dengan filter
+        $currentWeekBobotAvg = (clone $chartQuery)->where('tanggal', '>=', now()->startOfWeek())
+                                     ->where('tanggal', '<=', now()->endOfWeek())
+                                     ->avg('bobot') ?: 0;
+        
+        // Hitung rata-rata bobot minggu lalu dengan filter
+        $lastWeekBobotAvg = (clone $chartQuery)->where('tanggal', '>=', now()->subWeek()->startOfWeek())
+                                 ->where('tanggal', '<=', now()->subWeek()->endOfWeek())
+                                 ->avg('bobot') ?: 0;
+        
+        // Hitung perubahan bobot
+        $bobotChange = $lastWeekBobotAvg > 0 ? (($currentWeekBobotAvg - $lastWeekBobotAvg) / $lastWeekBobotAvg) * 100 : 0;
+        $bobotChangeText = $bobotChange >= 0 ? '+ ' . number_format(abs($bobotChange), 1) : '- ' . number_format(abs($bobotChange), 1);
+        $bobotChangeClass = $bobotChange >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
         
         return view('sugar-input.index', compact(
             'inputs', 

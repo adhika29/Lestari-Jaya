@@ -13,7 +13,7 @@ class SugarCaneShipmentController extends Controller
     {
         $query = SugarCaneShipment::latest();
         
-        // Tambahkan fungsionalitas pencarian
+        // Filter berdasarkan pencarian
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
@@ -55,29 +55,63 @@ class SugarCaneShipmentController extends Controller
         
         $shipments = $query->paginate(10);
         
-        // Data untuk chart pengirim
-        $pengirimData = SugarCaneShipment::select('nama_pengirim', DB::raw('count(*) as total'))
+        // Buat query terpisah untuk chart dengan filter yang sama
+        $chartQuery = SugarCaneShipment::query();
+        
+        // Terapkan filter yang sama untuk chart
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $chartQuery->where(function($q) use ($searchTerm) {
+                $q->where('nama_pengirim', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_tebu', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('bobot_kg', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('harga_per_kg', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('total_harga', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+        
+        if ($request->has('tanggal_awal') && $request->tanggal_awal) {
+            $chartQuery->whereDate('tanggal', '>=', $request->tanggal_awal);
+        }
+        
+        if ($request->has('tanggal_akhir') && $request->tanggal_akhir) {
+            $chartQuery->whereDate('tanggal', '<=', $request->tanggal_akhir);
+        }
+        
+        if ($request->has('jenis_tebu') && !empty($request->jenis_tebu)) {
+            $chartQuery->whereIn('jenis_tebu', $request->jenis_tebu);
+        }
+        
+        if ($request->has('pengirim') && !empty($request->pengirim)) {
+            $chartQuery->whereIn('nama_pengirim', $request->pengirim);
+        }
+        
+        if ($request->has('bulan') && $request->bulan) {
+            $chartQuery->whereMonth('tanggal', $request->bulan);
+        }
+        
+        if ($request->has('tahun') && $request->tahun) {
+            $chartQuery->whereYear('tanggal', $request->tahun);
+        }
+        
+        // Data untuk chart pengirim dengan filter
+        $pengirimData = (clone $chartQuery)->select('nama_pengirim', DB::raw('count(*) as total'))
             ->groupBy('nama_pengirim')
             ->get();
             
-        // Data untuk chart jenis tebu
-        $jenisTebuData = SugarCaneShipment::select('jenis_tebu', DB::raw('count(*) as total'))
+        // Data untuk chart jenis tebu dengan filter
+        $jenisTebuData = (clone $chartQuery)->select('jenis_tebu', DB::raw('count(*) as total'))
             ->groupBy('jenis_tebu')
             ->get();
         
-        // Debugging - log data
-        \Log::info('Total SugarCaneShipment records: ' . SugarCaneShipment::count());
-        \Log::info('Pengirim data count: ' . $pengirimData->count());
-        \Log::info('Jenis Tebu data count: ' . $jenisTebuData->count());
+        // Data untuk rata-rata bobot dengan filter
+        $avgBobot = (clone $chartQuery)->avg('bobot_kg');
         
-        // Data untuk rata-rata bobot
-        $avgBobot = SugarCaneShipment::avg('bobot_kg');
+        // Data untuk rata-rata harga dengan filter
+        $avgHarga = (clone $chartQuery)->avg('harga_per_kg');
         
-        // Data untuk rata-rata harga
-        $avgHarga = SugarCaneShipment::avg('harga_per_kg');
-        
-        // Hitung total keseluruhan harga (dengan filter yang sama)
-        $totalKeseluruhanHarga = $query->sum('total_harga');
+        // Hitung total keseluruhan harga dengan filter
+        $totalKeseluruhanHarga = (clone $chartQuery)->sum('total_harga');
         
         return view('sugar-cane.index', compact('shipments', 'pengirimData', 'jenisTebuData', 'avgBobot', 'avgHarga', 'totalKeseluruhanHarga'));
     }

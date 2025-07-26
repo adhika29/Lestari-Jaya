@@ -2,6 +2,10 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Gula Keluar</h1>
+    </div>
+
     <!-- Breadcrumb -->
     <div class="bg-white p-3 rounded-lg shadow-sm mb-4">
         <div class="flex items-center text-sm text-gray-600">

@@ -2,6 +2,10 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Biaya Konsumsi</h1>
+    </div>
+
     <!-- Breadcrumb -->
     <div class="bg-white p-3 rounded-lg shadow-sm mb-4">
         <div class="flex items-center text-sm text-gray-600">
@@ -50,19 +54,18 @@
             </a>
         </div>
 
-        <!-- Search and Filter -->
+        <!-- Search and Filter - Form Terintegrasi -->
         <div class="flex items-center mb-6">
-            <div class="relative mr-4">
-                <form action="{{ route('biaya-konsumsi.index') }}" method="GET" class="flex items-center">
+            <form action="{{ route('biaya-konsumsi.index') }}" method="GET" class="flex items-center space-x-4 w-full" id="filterForm">
+                <!-- Search Input -->
+                <div class="relative">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
                     <div class="absolute left-3 top-2.5">
                         <i class="ph ph-magnifying-glass text-gray-500 text-lg"></i>
                     </div>
-                </form>
-            </div>
+                </div>
 
-            <form action="{{ route('biaya-konsumsi.index') }}" method="GET" class="flex items-center space-x-4" id="filterForm">
-                <input type="hidden" name="search" value="{{ request('search') }}">
+                <!-- Filter Bulan -->
                 <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
                     <option value="">Bulan</option>
                     @for ($i = 1; $i <= 12; $i++)
@@ -70,6 +73,7 @@
                     @endfor
                 </select>
 
+                <!-- Filter Tahun -->
                 <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
                     <option value="">Tahun</option>
                     @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
@@ -77,6 +81,7 @@
                     @endfor
                 </select>
 
+                <!-- Tombol Filter Lanjutan -->
                 <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600">
                     <span>Filter</span>
                     <i class="ph-fill ph-funnel ml-2 text-lg"></i>
@@ -88,7 +93,6 @@
                     <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
                     Ekspor PDF
                 </a>
-                <!-- Tombol ekspor Excel dihapus -->
             </div>
         </div>
 
@@ -174,6 +178,11 @@
             </div>
             
             <form action="{{ route('biaya-konsumsi.index') }}" method="GET">
+                <!-- Hidden inputs untuk mempertahankan filter yang sudah ada -->
+                <input type="hidden" name="search" value="{{ request('search') }}">
+                <input type="hidden" name="bulan" value="{{ request('bulan') }}">
+                <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                
                 <!-- Tanggal Filter -->
                 <div class="mb-4 border-b border-gray-200 pb-4">
                     <div class="flex justify-between items-center mb-2 cursor-pointer" id="tanggalHeader">
@@ -251,18 +260,25 @@
         });
         document.getElementById('totalBiayaTanggal').textContent = 'Rp' + totalBiayaTanggal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-        // Bar Chart - Biaya per Tanggal
+        // Line Chart - Tren Biaya per Tanggal
         const ctxTanggal = document.getElementById('biayaPerTanggalChart').getContext('2d');
         new Chart(ctxTanggal, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: chartDataTanggal.map(item => item.tanggal_formatted),
                 datasets: [{
-                    label: 'Total Biaya (Rp)',
+                    label: 'Tren Biaya (Rp)',
                     data: chartDataTanggal.map(item => item.total),
-                    backgroundColor: 'rgba(161, 204, 165, 0.8)',
+                    backgroundColor: 'rgba(161, 204, 165, 0.2)',
                     borderColor: 'rgba(161, 204, 165, 1)',
-                    borderWidth: 1
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(161, 204, 165, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
@@ -275,6 +291,11 @@
                             callback: function(value) {
                                 return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                             }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 },
@@ -300,13 +321,18 @@
         // Pie Chart - Biaya per Keterangan
         const ctxKeterangan = document.getElementById('biayaPerKeteranganChart').getContext('2d');
 
-        // Warna yang digunakan untuk chart - tema hijau
+        // Warna yang digunakan untuk chart - warna soft netral
         const chartColors = [
-            'rgba(76, 175, 80, 0.8)',    // Hijau medium
-            'rgba(129, 199, 132, 0.8)',  // Hijau terang
-            'rgba(161, 204, 165, 0.8)',  // Hijau soft (A1CCA5)
-            'rgba(46, 125, 50, 0.8)',    // Hijau gelap
-            'rgba(102, 187, 106, 0.8)'   // Hijau segar
+                'rgba(95, 158, 160, 0.8)',   // Cadet Blue (biru kehijauan muted)
+                'rgba(188, 143, 143, 0.8)',  // Rosy Brown (coklat kemerahan soft)
+                'rgba(119, 136, 153, 0.8)',  // Light Slate Gray (abu-abu biru)
+                'rgba(205, 192, 176, 0.8)',  // Tan (coklat krem)
+                'rgba(147, 112, 219, 0.8)',  // Medium Purple (ungu muted)
+                'rgba(112, 128, 144, 0.8)',  // Slate Gray (abu-abu gelap soft)
+                'rgba(160, 82, 45, 0.8)',    // Saddle Brown (coklat tanah)
+                'rgba(106, 90, 205, 0.8)',   // Slate Blue (biru ungu muted)
+                'rgba(139, 69, 19, 0.8)',    // Saddle Brown (coklat gelap soft)
+                'rgba(72, 61, 139, 0.8)'     // Dark Slate Blue (biru gelap muted)
         ];
 
         new Chart(ctxKeterangan, {
@@ -386,6 +412,18 @@
         if (tahunSelect && filterForm) {
             tahunSelect.addEventListener('change', function() {
                 filterForm.submit();
+            });
+        }
+        
+        // Auto-submit form when search input changes (optional - dengan delay)
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filterForm.submit();
+                }, 500); // Submit setelah 500ms tidak ada input
             });
         }
     });

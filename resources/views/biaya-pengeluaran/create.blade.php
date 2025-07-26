@@ -1,6 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- Tambahkan jQuery dan Select2 CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Custom CSS untuk menyesuaikan tema brown -->
+<style>
+    .select2-container--default .select2-selection--single {
+        background-color: white;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        height: 42px;
+        padding: 8px 12px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151;
+        line-height: 26px;
+        padding-left: 0;
+        padding-right: 20px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px;
+        right: 8px;
+    }
+    
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6D4534;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(109, 69, 52, 0.2);
+    }
+    
+    .select2-dropdown {
+        border: 1px solid #6D4534;
+        border-radius: 0.375rem;
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #6D4534;
+        color: white;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #A0522D;
+        color: white;
+    }
+    
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #6D4534;
+        border-radius: 0.375rem;
+    }
+    
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+        border-color: #6D4534;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(109, 69, 52, 0.2);
+    }
+</style>
+
 <div class="container mx-auto px-4 py-8">
     <!-- Breadcrumb -->
     <div class="bg-white p-3 rounded-lg shadow-sm mb-4">
@@ -51,27 +115,16 @@
 
                 <div>
                     <label for="keterangan" class="block text-gray-700 mb-2">Keterangan</label>
-                    <div class="relative">
-                        <input type="text" id="keterangan" name="keterangan" value="{{ old('keterangan') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required autocomplete="off">
-                        <div id="keterangan-dropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden max-h-60 overflow-y-auto">
-                            <div class="p-2 border-b border-gray-200">
-                                <input type="text" id="keterangan-search" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" placeholder="Cari keterangan...">
-                            </div>
-                            <div id="keterangan-list">
-                                @foreach($keteranganList as $item)
-                                    <div class="keterangan-item p-2 hover:bg-gray-100 cursor-pointer">{{ $item }}</div>
-                                @endforeach
-                            </div>
-                            <div class="p-2 border-t border-gray-200">
-                                <button type="button" id="add-new-keterangan" class="w-full px-3 py-2 bg-brown-500 text-white rounded-md hover:bg-brown-600 flex items-center justify-center">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    Tambah Keterangan Baru
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <select id="keterangan" name="keterangan" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brown-500" required>
+                        <option value="">Pilih atau ketik keterangan...</option>
+                        @foreach($keteranganList as $item)
+                            <option value="{{ $item }}" {{ old('keterangan') == $item ? 'selected' : '' }}>{{ $item }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-gray-500 mt-1 block">Ketik untuk mencari keterangan yang sudah ada atau tambahkan keterangan baru</small>
+                    @error('keterangan')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -140,66 +193,85 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate on page load
     calculateTotal();
-    
-    // Keterangan dropdown functionality
-    const keteranganInput = document.getElementById('keterangan');
-    const keteranganDropdown = document.getElementById('keterangan-dropdown');
-    const keteranganSearch = document.getElementById('keterangan-search');
-    const keteranganItems = document.querySelectorAll('.keterangan-item');
-    const addNewKeteranganBtn = document.getElementById('add-new-keterangan');
-    
-    // Show dropdown when input is focused
-    keteranganInput.addEventListener('focus', function() {
-        keteranganDropdown.classList.remove('hidden');
-    });
-    
-    // Hide dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!keteranganInput.contains(e.target) && !keteranganDropdown.contains(e.target)) {
-            keteranganDropdown.classList.add('hidden');
+});
+
+$(document).ready(function() {
+    // Inisialisasi Select2 dengan autocomplete untuk keterangan
+    $('#keterangan').select2({
+        placeholder: 'Pilih atau ketik keterangan...',
+        allowClear: true,
+        tags: true, // Memungkinkan menambah nilai baru
+        tokenSeparators: [','],
+        ajax: {
+            url: '{{ route("biaya-konsumsi.keterangan") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term // parameter pencarian
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.map(function(item) {
+                        return {
+                            id: item,
+                            text: item
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        createTag: function (params) {
+            var term = $.trim(params.term);
+            
+            if (term === '') {
+                return null;
+            }
+            
+            // Cek apakah keterangan sudah ada (case insensitive)
+            var existingOptions = $('#keterangan option').map(function() {
+                return $(this).val().toLowerCase();
+            }).get();
+            
+            if (existingOptions.indexOf(term.toLowerCase()) === -1) {
+                return {
+                    id: term,
+                    text: term,
+                    newTag: true
+                };
+            }
+            
+            return null;
+        },
+        templateResult: function(data) {
+            if (data.newTag) {
+                return $('<span class="select2-results__option--new-tag" style="color:rgb(255, 255, 255); font-weight: bold;">' + data.text + ' <em style="color:rgb(255, 255, 255);">(Nama Baru)</em></span>');
+            }
+            return data.text;
+        },
+        templateSelection: function(data) {
+            if (data.newTag) {
+                return data.text + ' (Nama Baru)';
+            }
+            return data.text;
         }
     });
     
-    // Filter items when searching
-    keteranganSearch.addEventListener('input', function() {
-        const searchValue = this.value.toLowerCase();
-        const keteranganList = document.getElementById('keterangan-list');
-        const items = keteranganList.querySelectorAll('.keterangan-item');
+    // Validasi sebelum submit untuk konfirmasi keterangan baru
+    $('form').on('submit', function(e) {
+        var selectedValue = $('#keterangan').val();
+        var existingValues = @json(collect($keteranganList ?? [])->map(function($item) { return strtolower($item); }));
         
-        items.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            if (text.includes(searchValue)) {
-                item.classList.remove('hidden');
-            } else {
-                item.classList.add('hidden');
-            }
-        });
-    });
-    
-    // Select item when clicked
-    keteranganItems.forEach(item => {
-        item.addEventListener('click', function() {
-            keteranganInput.value = this.textContent;
-            keteranganDropdown.classList.add('hidden');
-        });
-    });
-    
-    // Add new keterangan
-    addNewKeteranganBtn.addEventListener('click', function() {
-        const newValue = keteranganSearch.value.trim();
-        if (newValue) {
-            keteranganInput.value = newValue;
-            keteranganDropdown.classList.add('hidden');
-        } else {
-            // If search is empty, use what's in the main input
-            const mainInputValue = keteranganInput.value.trim();
-            if (mainInputValue) {
-                // Keep the current value and just close the dropdown
-                keteranganDropdown.classList.add('hidden');
-            } else {
-                // Focus on search to indicate user should type something
-                keteranganSearch.focus();
-            }
+        if (selectedValue && existingValues.includes(selectedValue.toLowerCase())) {
+            // Jika keterangan sudah ada, tetap lanjutkan
+            return true;
+        }
+        
+        // Konfirmasi jika menambah keterangan baru
+        if (selectedValue && !existingValues.includes(selectedValue.toLowerCase())) {
+            return confirm('Anda akan menambahkan keterangan baru: "' + selectedValue + '". Lanjutkan?');
         }
     });
 });
