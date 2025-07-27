@@ -33,9 +33,9 @@
         </div>
 
         <!-- Search and Filter -->
-        <div class="mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
+        <div class="overflow-x-auto">
+            <div class="flex items-center mb-6 min-w-max gap-4 px-2">
+                <div class="flex items-center space-x-4 flex-shrink-0">
                     <div class="relative">
                         <form action="{{ route('gaji-karyawan.index') }}" method="GET" id="searchForm">
                             <input type="text" name="search" placeholder="Temukan data disini" value="{{ request('search') }}" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
@@ -45,16 +45,16 @@
                             <button type="submit" hidden></button>
                         </form>
                     </div>
-
-                    <form action="{{ route('gaji-karyawan.index') }}" method="GET" id="monthYearFilterForm" class="flex items-center space-x-4">
-                        <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
+                    
+                    <form action="{{ route('gaji-karyawan.index') }}" method="GET" class="flex items-center space-x-4" id="monthYearFilterForm">
+                        <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 w-32">
                             <option value="">Bulan</option>
                             @for ($i = 1; $i <= 12; $i++)
                                 <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                             @endfor
                         </select>
 
-                        <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
+                        <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 w-24">
                             <option value="">Tahun</option>
                             @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
                                 <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
@@ -62,7 +62,7 @@
                         </select>
                         
                         <!-- Filter Button untuk Modal -->
-                        <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600" onclick="event.stopPropagation()">
+                        <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600 whitespace-nowrap" onclick="event.stopPropagation()">
                             <span>Filter</span>
                             <i class="ph-fill ph-funnel ml-2"></i>
                         </button>
@@ -72,12 +72,11 @@
                     </form>
                 </div>
                 
-                <div class="flex space-x-2">
-                    <a href="{{ route('gaji-karyawan.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
+                <div class="flex space-x-2 flex-shrink-0">
+                    <a href="{{ route('gaji-karyawan.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50 whitespace-nowrap">
                         <i class="ph-fill ph-file-pdf mr-2"></i>
                         Ekspor PDF
                     </a>
-                    <!-- Tombol Excel dihapus dari sini -->
                 </div>
             </div>
         </div>

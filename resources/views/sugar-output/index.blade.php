@@ -132,44 +132,45 @@
         </div>
 
         <!-- Search and Filter -->
-        <div class="flex items-center mb-6">
-            <div class="relative mr-4">
-                <form action="{{ route('sugar-output.index') }}" method="GET" class="flex items-center">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
-                    <div class="absolute left-3 top-2.5">
-                        <i class="ph ph-magnifying-glass text-gray-500 text-lg"></i>
-                    </div>
+        <div class="overflow-x-auto">
+            <div class="flex items-center mb-6 min-w-max gap-4 px-2">
+                <div class="relative flex-shrink-0">
+                    <form action="{{ route('sugar-output.index') }}" method="GET" class="flex items-center">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
+                        <div class="absolute left-3 top-2.5">
+                            <i class="ph ph-magnifying-glass text-gray-500 text-lg"></i>
+                        </div>
+                    </form>
+                </div>
+
+                <form action="{{ route('sugar-output.index') }}" method="GET" class="flex items-center space-x-4 flex-shrink-0">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <select name="bulan" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 w-32">
+                        <option value="">Bulan</option>
+                        @for ($i = 1; $i <= 12; $i++)
+                            <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                        @endfor
+                    </select>
+
+                    <select name="tahun" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 w-24">
+                        <option value="">Tahun</option>
+                        @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
+                            <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+
+                    <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600 whitespace-nowrap">
+                        <span>Filter</span>
+                        <i class="ph-fill ph-funnel ml-2 text-lg"></i>
+                    </button>
                 </form>
-            </div>
 
-            <form action="{{ route('sugar-output.index') }}" method="GET" class="flex items-center space-x-4">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-                <select name="bulan" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
-                    <option value="">Bulan</option>
-                    @for ($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
-                    @endfor
-                </select>
-
-                <select name="tahun" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500">
-                    <option value="">Tahun</option>
-                    @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
-                        <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                    @endfor
-                </select>
-
-                <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600">
-                    <span>Filter</span>
-                    <i class="ph-fill ph-funnel ml-2 text-lg"></i>
-                </button>
-            </form>
-
-            <div class="ml-auto flex space-x-2">
-                <a href="{{ route('sugar-output.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
-                    <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
-                    Ekspor PDF
-                </a>
-                <!-- Tombol Export Excel dihapus -->
+                <div class="flex space-x-2 flex-shrink-0">
+                    <a href="{{ route('sugar-output.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50 whitespace-nowrap">
+                        <i class="ph-fill ph-file-pdf mr-2 text-lg"></i>
+                        Ekspor PDF
+                    </a>
+                </div>
             </div>
         </div>
 

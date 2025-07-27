@@ -79,10 +79,6 @@
                     <div class="text-center">
                         <p class="text-gray-600">Sistem khusus untuk admin perusahaan</p>
                     </div>
-                    <!-- Hapus bagian ini -->
-                    <!-- <div class="text-center">
-                        <p class="text-gray-600">Belum punya akun? <a href="{{ route('register') }}" class="text-green-500 hover:underline">Daftar</a></p>
-                    </div> -->
                 </form>
             </div>
         </div>

@@ -105,70 +105,73 @@
 
         <!-- Search and Filter -->
         <div class="mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <!-- Update search form -->
-                    <form action="{{ route('sugar-cane.index') }}" method="GET" class="relative">
-                        <!-- Preserve existing filters -->
-                        @if(request('bulan'))
-                            <input type="hidden" name="bulan" value="{{ request('bulan') }}">
-                        @endif
-                        @if(request('tahun'))
-                            <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                        @endif
-                        @if(request('tanggal_awal'))
-                            <input type="hidden" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
-                        @endif
-                        @if(request('tanggal_akhir'))
-                            <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
-                        @endif
-                        @if(request('jenis_tebu'))
-                            @foreach(request('jenis_tebu') as $jenis)
-                                <input type="hidden" name="jenis_tebu[]" value="{{ $jenis }}">
-                            @endforeach
-                        @endif
-                        @if(request('pengirim'))
-                            @foreach(request('pengirim') as $pengirim)
-                                <input type="hidden" name="pengirim[]" value="{{ $pengirim }}">
-                            @endforeach
-                        @endif
-                    
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
-                        <div class="absolute left-3 top-2.5">
-                            <i class="ph ph-magnifying-glass text-gray-500"></i>
-                        </div>
-                        <button type="submit" class="sr-only">Search</button>
-                    </form>
-
-                    <form action="{{ route('sugar-cane.index') }}" method="GET" id="monthYearFilterForm" class="flex items-center space-x-4">
-                        <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500" onchange="document.getElementById('monthYearFilterForm').submit()">
-                            <option value="">Bulan</option>
-                            @for ($i = 1; $i <= 12; $i++)
-                                <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
-                            @endfor
-                        </select>
-
-                        <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-brown-500" onchange="document.getElementById('monthYearFilterForm').submit()">
-                            <option value="">Tahun</option>
-                            @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
-                                <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                            @endfor
-                        </select>
+            <!-- Container dengan horizontal scroll -->
+            <div class="overflow-x-auto">
+                <div class="flex items-center justify-between min-w-max gap-4 pb-2">
+                    <div class="flex items-center space-x-4 min-w-max">
+                        <!-- Update search form -->
+                        <form action="{{ route('sugar-cane.index') }}" method="GET" class="relative">
+                            <!-- Preserve existing filters -->
+                            @if(request('bulan'))
+                                <input type="hidden" name="bulan" value="{{ request('bulan') }}">
+                            @endif
+                            @if(request('tahun'))
+                                <input type="hidden" name="tahun" value="{{ request('tahun') }}">
+                            @endif
+                            @if(request('tanggal_awal'))
+                                <input type="hidden" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
+                            @endif
+                            @if(request('tanggal_akhir'))
+                                <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
+                            @endif
+                            @if(request('jenis_tebu'))
+                                @foreach(request('jenis_tebu') as $jenis)
+                                    <input type="hidden" name="jenis_tebu[]" value="{{ $jenis }}">
+                                @endforeach
+                            @endif
+                            @if(request('pengirim'))
+                                @foreach(request('pengirim') as $pengirim)
+                                    <input type="hidden" name="pengirim[]" value="{{ $pengirim }}">
+                                @endforeach
+                            @endif
                         
-                        <!-- Filter Button untuk Modal -->
-                        <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600">
-                            <span>Filter</span>
-                            <i class="ph-fill ph-funnel ml-2"></i>
-                        </button>
-                    </form>
-                </div>
-                
-                <div class="flex space-x-2">
-                    <a href="{{ route('sugar-cane.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
-                        <i class="ph-fill ph-file-pdf mr-2"></i>
-                        Ekspor PDF
-                    </a>
-                    <!-- Tombol Export Excel dihapus -->
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Temukan data disini" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
+                            <div class="absolute left-3 top-2.5">
+                                <i class="ph ph-magnifying-glass text-gray-500"></i>
+                            </div>
+                            <button type="submit" class="sr-only">Search</button>
+                        </form>
+
+                        <form action="{{ route('sugar-cane.index') }}" method="GET" id="monthYearFilterForm" class="flex items-center space-x-4">
+                            <select name="bulan" id="bulanSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 min-w-[120px]" onchange="document.getElementById('monthYearFilterForm').submit()">
+                                <option value="">Bulan</option>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ request('bulan') == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                @endfor
+                            </select>
+
+                            <select name="tahun" id="tahunSelect" class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brown-500 min-w-[100px]" onchange="document.getElementById('monthYearFilterForm').submit()">
+                                <option value="">Tahun</option>
+                                @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                    <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                            
+                            <!-- Filter Button untuk Modal -->
+                            <button type="button" id="openFilterModal" class="bg-brown-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-brown-600 whitespace-nowrap">
+                                <span>Filter</span>
+                                <i class="ph-fill ph-funnel ml-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="flex space-x-2 min-w-max">
+                        <a href="{{ route('sugar-cane.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50 whitespace-nowrap">
+                            <i class="ph-fill ph-file-pdf mr-2"></i>
+                            Ekspor PDF
+                        </a>
+                        <!-- Tombol Export Excel dihapus -->
+                    </div>
                 </div>
             </div>
         </div>

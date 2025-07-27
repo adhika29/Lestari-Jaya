@@ -29,26 +29,27 @@
         </div>
 
         <!-- Search and Filter -->
-        <div class="mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <form action="{{ route('karyawan.index') }}" method="GET" id="searchForm">
-                            <input type="text" name="search" placeholder="Temukan data disini" value="{{ request('search') }}" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
-                            <div class="absolute left-3 top-2.5">
-                                <i class="ph ph-magnifying-glass text-gray-500"></i>
-                            </div>
-                            <button type="submit" hidden></button>
-                        </form>
+        <div class="overflow-x-auto">
+            <div class="mb-6 min-w-max px-2">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4 flex-shrink-0">
+                        <div class="relative">
+                            <form action="{{ route('karyawan.index') }}" method="GET" id="searchForm">
+                                <input type="text" name="search" placeholder="Temukan data disini" value="{{ request('search') }}" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brown-500 w-80">
+                                <div class="absolute left-3 top-2.5">
+                                    <i class="ph ph-magnifying-glass text-gray-500"></i>
+                                </div>
+                                <button type="submit" hidden></button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="flex space-x-2">
-                    <a href="{{ route('karyawan.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50">
-                        <i class="ph-fill ph-file-pdf mr-2"></i>
-                        Ekspor PDF
-                    </a>
-                    <!-- Tombol Excel dihapus dari sini -->
+                    
+                    <div class="flex space-x-2 flex-shrink-0">
+                        <a href="{{ route('karyawan.export-pdf', request()->query()) }}" class="border border-red-500 text-red-500 px-4 py-2 rounded-lg flex items-center hover:bg-red-50 whitespace-nowrap">
+                            <i class="ph-fill ph-file-pdf mr-2"></i>
+                            Ekspor PDF
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
